@@ -8,6 +8,14 @@ import argparse, importlib.util, json, os, pathlib, subprocess
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('deployment',ROOT/'scripts/deploy-dev.py')
 D=importlib.util.module_from_spec(spec);spec.loader.exec_module(D)
+def cleanup_api_discovery(config):
+ """Remove aggregated APIs served by namespaces being retired, avoiding dead discovery."""
+ env = dict(os.environ, KUBECONFIG=str(config))
+ items = json.loads(subprocess.check_output(['kubectl', 'get', 'apiservices', '-o', 'json'], env=env, text=True))['items']
+ for item in items:
+  if item.get('spec', {}).get('service', {}).get('namespace') in ['monitoring', 'argocd', 'istio-system']:
+   subprocess.run(['kubectl', 'delete', 'apiservice', item['metadata']['name']], env=env, check=True)
+
 def main():
  os.umask(0o077)
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--apply',action='store_true');p.add_argument('--backup-directory',required=True);a=p.parse_args()
@@ -44,7 +52,9 @@ def main():
  extra={'TF_VAR_kubeconfig_path':str(config)}
  try:
   reconcile('gke',protection=True)
-  for stage in ['workloads','addons','cluster-bootstrap']:reconcile(stage,extra,destroy=True)
+  for stage in ['workloads','addons','cluster-bootstrap']:
+   if stage == 'cluster-bootstrap' and a.apply:cleanup_api_discovery(config)
+   reconcile(stage,extra,destroy=True)
   reconcile('automation',destroy=True)
  finally:
   tunnel.terminate();tunnel.wait(timeout=15);log.close()
