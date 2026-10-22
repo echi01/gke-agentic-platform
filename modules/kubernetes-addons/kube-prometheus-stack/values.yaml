@@ -1,0 +1,32 @@
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    maximumStartupDurationSeconds: 300
+    podMetadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+        sidecar.istio.io/nativeSidecar: 'true'
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: '1'
+        memory: 2Gi
+grafana:
+  admin:
+    existingSecret: grafana-admin
+  service:
+    type: ClusterIP
+  sidecar:
+    dashboards:
+      searchNamespace: ALL
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false

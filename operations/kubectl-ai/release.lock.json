@@ -1,0 +1,14 @@
+{
+  "version": "v0.0.31",
+  "source": "https://github.com/GoogleCloudPlatform/kubectl-ai",
+  "assets": {
+    "kubectl-ai_Darwin_arm64.tar.gz": "dded8831a44bdfa29304b5872ece3ec9976f852a3f1b97777ba31d5bb60095d7",
+    "kubectl-ai_Darwin_x86_64.tar.gz": "7dc5f921063b74122f935e8f730cbe763bf868495b7cea03017f404ce7dd4de0",
+    "kubectl-ai_Linux_arm64.tar.gz": "c2eb7fb99bf5217968a505ab38b0a230d86d1581957ccdda66167020b114d90d",
+    "kubectl-ai_Linux_i386.tar.gz": "c097cd91c022e5d03a77799bca87cdcd28aca4553367c76b680359e345a2d82b",
+    "kubectl-ai_Linux_x86_64.tar.gz": "872ef891232b01772c46a54b1866b383e043100e3806835158187c603eb490d1",
+    "kubectl-ai_Windows_arm64.zip": "3ca01aa4210f7be1d686fdda9b8855da555e0625b044a4fd80c1c4e8f41270eb",
+    "kubectl-ai_Windows_i386.zip": "f0a706c7566c8a38a5ebb3ce8653a940c997a69bc7c09370bca9fc15f223da59",
+    "kubectl-ai_Windows_x86_64.zip": "8e987c1fad80ec6d5a4e8688ed096506fb422e7cf4789f83edf3fab9a5f5c8ff"
+  }
+}

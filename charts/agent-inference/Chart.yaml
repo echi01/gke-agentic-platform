@@ -1,0 +1,5 @@
+apiVersion: v2
+name: agent-inference
+description: Optional private model runtime; model weights are an explicit operator choice
+type: application
+version: 0.1.0

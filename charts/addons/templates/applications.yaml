@@ -1,0 +1,27 @@
+{{- if not (regexMatch "^[a-f0-9]{40}$" .Values.revision) }}{{ fail "Pin the infrastructure Git commit" }}{{ end }}
+{{- range $name,$addon := .Values.addons }}
+{{- if $addon }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $name }}
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: {{ $addon.wave | quote }}}
+spec:
+  project: platform
+  source:
+    repoURL: {{ $.Values.repositoryUrl | quote }}
+    targetRevision: {{ $.Values.revision | quote }}
+    path: {{ $addon.path | quote }}
+    helm:
+      releaseName: {{ $addon.name | quote }}
+      valuesObject:
+        {{- toYaml $addon.values | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: {{ $addon.namespace | quote }}}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [CreateNamespace=true, ServerSideApply=true]
+    retry: {limit: 5, backoff: {duration: 10s, factor: 2, maxDuration: 3m}}
+{{- end }}
+{{- end }}

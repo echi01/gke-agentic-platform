@@ -1,0 +1,31 @@
+apiVersion: jobset.x-k8s.io/v1alpha2
+kind: JobSet
+metadata:
+  name: approved-training
+  namespace: training
+  labels: {kueue.x-k8s.io/queue-name: training}
+spec:
+  suspend: true
+  replicatedJobs:
+    - name: trainer
+      replicas: 1
+      template:
+        spec:
+          parallelism: 1
+          completions: 1
+          backoffLimit: 0
+          activeDeadlineSeconds: 1800
+          template:
+            spec:
+              automountServiceAccountToken: false
+              nodeSelector: {workload-class: gpu}
+              tolerations: [{key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}]
+              restartPolicy: Never
+              securityContext: {runAsNonRoot: true, runAsUser: 1000, seccompProfile: {type: RuntimeDefault}}
+              containers:
+                - name: trainer
+                  image: YOUR_APPROVED_TRAINING_IMAGE_BY_DIGEST
+                  securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+                  resources:
+                    requests: {cpu: "2", memory: 8Gi, nvidia.com/gpu: "1"}
+                    limits: {cpu: "4", memory: 12Gi, nvidia.com/gpu: "1"}

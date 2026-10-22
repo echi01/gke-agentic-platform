@@ -1,0 +1,48 @@
+{
+  "terraform": {
+    "required_version": ">= 1.8",
+    "required_providers": {
+      "google": {
+        "source": "hashicorp/google",
+        "version": "~> 7.0"
+      }
+    }
+  },
+  "variable": {
+    "project_id": {
+      "type": "string"
+    },
+    "bucket_name": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string",
+      "default": "us-central1"
+    }
+  },
+  "resource": {
+    "google_storage_bucket": {
+      "state": {
+        "project": "${var.project_id}",
+        "name": "${var.bucket_name}",
+        "location": "${var.region}",
+        "uniform_bucket_level_access": true,
+        "public_access_prevention": "enforced",
+        "force_destroy": false,
+        "versioning": [
+          {
+            "enabled": true
+          }
+        ],
+        "lifecycle": {
+          "prevent_destroy": true
+        }
+      }
+    }
+  },
+  "output": {
+    "bucket": {
+      "value": "${google_storage_bucket.state.name}"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "argo-cd": {
+    "repository": "https://argoproj.github.io/argo-helm",
+    "chart": "argo-cd",
+    "version": "10.10.5",
+    "digest": "ba6447eeed42bc41d1f0527721047b236304e97669a7b6286d02be4a1644ba7a",
+    "archiveSha256": "ba6447eeed42bc41d1f0527721047b236304e97669a7b6286d02be4a1644ba7a",
+    "path": "vendor/helm/argo-cd/10.10.5/argo-cd",
+    "treeSha256": "f07d08bb89bf662f588bb2ea9766136b3555c9b9dba48aed69d4e3582ada7acb"
+  },
+  "kube-prometheus-stack": {
+    "repository": "https://prometheus-community.github.io/helm-charts",
+    "chart": "kube-prometheus-stack",
+    "version": "92.11.0",
+    "digest": "c357a259965187edcbed86591461bfbd56997591afba09be3a49a09b2bec8a2c",
+    "archiveSha256": "c357a259965187edcbed86591461bfbd56997591afba09be3a49a09b2bec8a2c",
+    "path": "vendor/helm/kube-prometheus-stack/92.11.0/kube-prometheus-stack",
+    "treeSha256": "22a1f0a519a824924fc756e855e0c0b4811927d50ce378eeeae957d29d48f9eb"
+  },
+  "prometheus-adapter": {
+    "repository": "https://prometheus-community.github.io/helm-charts",
+    "chart": "prometheus-adapter",
+    "version": "5.3.0",
+    "digest": "aa6752b6207ed788522714c3ef7f67f27d423eb4d9512fecb52dc641b6434f31",
+    "archiveSha256": "aa6752b6207ed788522714c3ef7f67f27d423eb4d9512fecb52dc641b6434f31",
+    "path": "vendor/helm/prometheus-adapter/5.3.0/prometheus-adapter",
+    "treeSha256": "56ba5d7a4eb1ab4ccdf9445f5b274079277af50fdeabe2e7832cdbbeb0d0a36c"
+  },
+  "external-secrets": {
+    "repository": "https://charts.external-secrets.io",
+    "chart": "external-secrets",
+    "version": "2.13.0",
+    "digest": "f693a96f0d929a07e000dd39e68b92a1a1343c5bc440ebab091b03da30bcac3a",
+    "archiveSha256": "f693a96f0d929a07e000dd39e68b92a1a1343c5bc440ebab091b03da30bcac3a",
+    "path": "vendor/helm/external-secrets/2.13.0/external-secrets",
+    "treeSha256": "4aeea5b8eeebe537fb01f32781f2086d1e244dfcd204f0c090dd838dbb7a5176"
+  },
+  "istio-base": {
+    "repository": "https://istio-release.storage.googleapis.com/charts",
+    "chart": "base",
+    "version": "1.30.6",
+    "digest": "41682844bc4c3378ddae8791d58ef730a6e6b4c196bcb6b46c53e356358a853f",
+    "archiveSha256": "41682844bc4c3378ddae8791d58ef730a6e6b4c196bcb6b46c53e356358a853f",
+    "path": "vendor/helm/istio-base/1.30.6/base",
+    "treeSha256": "c37b65f41bee215095f99080d9b1ed2decf3d3a791616441bc7667f11459f57a"
+  },
+  "istiod": {
+    "repository": "https://istio-release.storage.googleapis.com/charts",
+    "chart": "istiod",
+    "version": "1.30.6",
+    "digest": "cea82b6b924121c05b7122699c5d40c6fb4e5338b3e01a4ac93ee6d5a1d3eb24",
+    "archiveSha256": "cea82b6b924121c05b7122699c5d40c6fb4e5338b3e01a4ac93ee6d5a1d3eb24",
+    "path": "vendor/helm/istiod/1.30.6/istiod",
+    "treeSha256": "1d38cf9fe645294f86545a192b959bfcf10efa8cf876e9e9e4bc2387934aaba6"
+  },
+  "istio-cni": {
+    "repository": "https://istio-release.storage.googleapis.com/charts",
+    "chart": "cni",
+    "version": "1.30.6",
+    "digest": "e8a6e0c27ee2cb435733b982f3b40fd82bac70124847c3ff0672c49d25b0989a",
+    "archiveSha256": "e8a6e0c27ee2cb435733b982f3b40fd82bac70124847c3ff0672c49d25b0989a",
+    "path": "vendor/helm/istio-cni/1.30.6/cni",
+    "treeSha256": "e779fa1ef5e69c84070bef49162dd0a77f600c53008a3edeaebe899e514613fa"
+  },
+  "istio-gateway": {
+    "repository": "https://istio-release.storage.googleapis.com/charts",
+    "chart": "gateway",
+    "version": "1.30.6",
+    "digest": "d47d12fc4320da79fbae22c76a7886fdc2722fce0de2888f34337fbeb7d570b1",
+    "archiveSha256": "d47d12fc4320da79fbae22c76a7886fdc2722fce0de2888f34337fbeb7d570b1",
+    "path": "vendor/helm/istio-gateway/1.30.6/gateway",
+    "treeSha256": "bc2788628ac97c1b5ec37ded332f1bc186313b49f6318b1bd789a5c2c457bacc"
+  },
+  "kueue": {
+    "repository": "registry.k8s.io/kueue/charts",
+    "chart": "kueue",
+    "version": "0.20.2",
+    "release": "https://github.com/kubernetes-sigs/kueue/releases/tag/v0.20.2",
+    "ociDigest": "sha256:d519e191429e3e4c06a9039b07e0b20b665db7413a187c54e279a2962d34a1b6",
+    "archiveSha256": "4ba47484ca6ba568359f42a4be9dcb0e8a87e0e5a347136db6239f7b0ebccedf",
+    "path": "vendor/helm/kueue/0.20.2/kueue",
+    "treeSha256": "c987962b6f9f9f9a9928cc2d6928d90944624245bf8fe049a7a131e4e9829122"
+  },
+  "jobset": {
+    "repository": "registry.k8s.io/jobset/charts",
+    "chart": "jobset",
+    "version": "0.13.0",
+    "release": "https://github.com/kubernetes-sigs/jobset/releases/tag/v0.13.0",
+    "ociDigest": "sha256:1f8b2ac5335e8bbd9cf8e6e5a961d71659773d9f00850606960adc7da9849628",
+    "archiveSha256": "c8e00a8c7ae8f294a2aa0871ed71dd9ece481d55c8e8050db15a5baf144ba4d4",
+    "path": "vendor/helm/jobset/0.13.0/jobset",
+    "treeSha256": "d53b6e44feaec51a3930c65cc10f15bc1dda0460fde889fa74f9b03d05276419"
+  },
+  "cert-manager": {
+    "repository": "quay.io/jetstack/charts",
+    "chart": "cert-manager",
+    "version": "v1.21.2",
+    "ociDigest": "sha256:634dce9c13b56677a2c05e2ab76c312d0be2664022d5dd05815da67e1fd5f610",
+    "archiveSha256": "73a56e1728edd6c99f1f31082618c3259d279a76b7ebd3d4bdc5475c2442d34a",
+    "path": "vendor/helm/cert-manager/v1.21.2/cert-manager",
+    "treeSha256": "13e8d1d8c2a5671381b611e892b088b2748a7ba22928ccde98e196cfa99fb01c"
+  },
+  "argo-rollouts": {
+    "repository": "https://argoproj.github.io/argo-helm",
+    "chart": "argo-rollouts",
+    "version": "2.43.8",
+    "digest": "1c998ee3cd72a078ca73ba399644198fe8a446399b5fc5bbff94af5043a0747d",
+    "archiveSha256": "1c998ee3cd72a078ca73ba399644198fe8a446399b5fc5bbff94af5043a0747d",
+    "path": "vendor/helm/argo-rollouts/2.43.8/argo-rollouts",
+    "treeSha256": "2a1b52d8332dedc1970251e938963a140c3c90ae976fb5c75089adc35ae582d0"
+  },
+  "keda": {
+    "repository": "https://kedacore.github.io/charts",
+    "chart": "keda",
+    "version": "2.21.0",
+    "digest": "a7da56bf41a33dad9d2fc82a6fdecee552fff947d80bf1e1dbcf4db0f9e26dee",
+    "archiveSha256": "a7da56bf41a33dad9d2fc82a6fdecee552fff947d80bf1e1dbcf4db0f9e26dee",
+    "path": "vendor/helm/keda/2.21.0/keda",
+    "treeSha256": "6d4ed2a85835d105813a55d4c2977171364d69ac645e52866c287dcc212c7207"
+  },
+  "kubernetes-mcp": {
+    "path": "charts/kubernetes-mcp",
+    "version": "1.0.0",
+    "chart": "kubernetes-mcp",
+    "source": "operations/mcp"
+  },
+  "traefik": {
+    "repository": "https://traefik.github.io/charts",
+    "chart": "traefik",
+    "version": "42.1.2",
+    "archiveSha256": "ecf9ac8bc0837e3260722566c2a49919332ca96b0b4e962405dfcfae51838699",
+    "path": "vendor/helm/traefik/42.1.2/traefik",
+    "treeSha256": "542c8d91d88d268f33d3f9e4a683c054338c7bc3e9fe13fb7ccd35e16e5a8b34"
+  },
+  "certificate-issuers": {
+    "path": "charts/certificate-issuers",
+    "version": "1.0.0",
+    "chart": "certificate-issuers",
+    "source": "charts/certificate-issuers"
+  }
+}

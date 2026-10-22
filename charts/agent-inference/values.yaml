@@ -1,0 +1,14 @@
+image: ""
+gpu: false
+port: 11434
+command: [ollama, serve]
+modelStorageSize: 30Gi
+storageClassName: standard-rwo
+replicas: 1
+autoscaling:
+  enabled: false
+  maxReplicas: 2
+resources:
+  requests: {cpu: "1", memory: 2Gi}
+  limits: {cpu: "2", memory: 4Gi}
+allowedClients: []

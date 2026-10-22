@@ -1,0 +1,2 @@
+project_id = "YOUR_PROD_PROJECT"
+bucket_name = "YOUR_UNIQUE_PROD_STATE_BUCKET"

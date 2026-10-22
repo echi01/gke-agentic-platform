@@ -1,0 +1,8 @@
+cni:
+  cniBinDir: /home/kubernetes/bin
+  excludeNamespaces:
+  - istio-system
+  - kube-system
+  - argocd
+  - external-secrets
+  - platform-ops

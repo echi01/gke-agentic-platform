@@ -1,0 +1,8 @@
+image: ''
+localDevelopment: false
+inspectNamespace: platform-ops
+apiCidrs: []
+operatorGroups: [platform-operators]
+resources:
+  requests: {cpu: 50m, memory: 64Mi}
+  limits: {cpu: 250m, memory: 128Mi}

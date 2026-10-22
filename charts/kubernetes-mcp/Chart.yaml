@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kubernetes-mcp
+version: 1.0.0
+appVersion: 1.0.0
+type: application
+description: Private namespace-bound Kubernetes MCP inspection over stdio

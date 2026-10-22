@@ -1,0 +1,28 @@
+{{- if not (regexMatch "^[a-f0-9]{40}$" .Values.revision) }}{{ fail "Pin a reviewed Git commit" }}{{ end }}
+{{- if .Values.createProject }}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata: {name: platform, namespace: argocd}
+spec:
+  sourceRepos: [{{ .Values.repositoryUrl | quote }}]
+  destinations: [{server: 'https://kubernetes.default.svc', namespace: '*'}]
+  clusterResourceWhitelist: [{group: '*', kind: '*'}]
+  namespaceResourceWhitelist: [{group: '*', kind: '*'}]
+---
+{{- end }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: {{ required "Set parent name" .Values.name }}, namespace: argocd}
+spec:
+  project: platform
+  source:
+    repoURL: {{ required "Set owned platform repository" .Values.repositoryUrl | quote }}
+    targetRevision: {{ .Values.revision | quote }}
+    path: {{ required "Set local repository chart path" .Values.path | quote }}
+    helm:
+      valuesObject:
+        {{- toYaml .Values.parameters | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: argocd}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true]

@@ -1,0 +1,2 @@
+bucket = "YOUR_STAGING_STATE_BUCKET"
+prefix = "staging/addons"

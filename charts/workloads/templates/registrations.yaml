@@ -1,0 +1,169 @@
+{{- $namespaces := dict }}
+{{- range $name,$app := .Values.workloads }}
+{{- if not (regexMatch "^[a-z][a-z0-9-]{1,40}$" $name) }}{{ fail "Invalid registration name" }}{{ end }}
+{{- if not (regexMatch "^[a-f0-9]{40}$" $app.revision) }}{{ fail "Pin an application release commit" }}{{ end }}
+{{- if hasKey $namespaces $app.namespace }}{{ fail "Each application requires its own namespace" }}{{ end }}
+{{- $_ := set $namespaces $app.namespace true }}
+{{- if not (regexMatch "^(https://|ssh://|git@)" $app.repositoryUrl) }}{{ fail "Set the external application Git repository" }}{{ end }}
+{{- if not (regexMatch "^[a-z][a-z0-9-]{1,40}$" $app.namespace) }}{{ fail "Invalid application namespace" }}{{ end }}
+{{- if has $app.namespace (list "default" "kube-system" "kube-public" "kube-node-lease" "argocd" "istio-system" "monitoring" "platform-ops" "cert-manager" "external-secrets" "keda" "argo-rollouts" "kueue-system" "jobset-system") }}{{ fail "Applications require a dedicated tenant namespace" }}{{ end }}
+{{- $edge := $app.edgeNamespace | default "" }}
+{{- if and $edge (ne $edge (printf "%s-edge" $app.namespace)) }}{{ fail "The optional edge namespace must be the tenant namespace with -edge appended" }}{{ end }}
+{{- if $edge }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $edge }}
+  annotations: {argocd.argoproj.io/sync-wave: '-10', argocd.argoproj.io/sync-options: Prune=false}
+  labels:
+    platform.example.org/tenant: {{ $name }}
+    pod-security.kubernetes.io/enforce: restricted
+{{- end }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $app.namespace }}
+  annotations: {argocd.argoproj.io/sync-wave: '-10', argocd.argoproj.io/sync-options: Prune=false}
+  labels:
+    platform.example.org/tenant: {{ $name }}
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: v1.34
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+    {{- if $app.mesh }}
+    istio-injection: enabled
+    {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tenant-default-deny
+  namespace: {{ $app.namespace }}
+  annotations: {argocd.argoproj.io/sync-wave: '-9'}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: tenant-budget
+  namespace: {{ $app.namespace }}
+  annotations: {argocd.argoproj.io/sync-wave: '-9'}
+spec:
+  hard:
+    pods: '40'
+    requests.cpu: '16'
+    requests.memory: 24Gi
+    limits.cpu: '32'
+    limits.memory: 48Gi
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: tenant-{{ $name }}-runtime
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: '-8'}
+spec:
+  sourceRepos: [{{ $app.repositoryUrl | quote }}]
+  destinations: [{server: 'https://kubernetes.default.svc', namespace: {{ $app.namespace | quote }}}]
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - {group: '', kind: Service}
+    - {group: '', kind: ConfigMap}
+    - {group: apps, kind: Deployment}
+    - {group: apps, kind: StatefulSet}
+    - {group: batch, kind: CronJob}
+    - {group: autoscaling, kind: HorizontalPodAutoscaler}
+    - {group: policy, kind: PodDisruptionBudget}
+  roles:
+    - name: observer
+      groups: {{ $app.observerGroups | default list | toJson }}
+      policies: ['p, proj:tenant-{{ $name }}-runtime:observer, applications, get, tenant-{{ $name }}-runtime/*, allow']
+{{- if $app.extensionPath }}
+---
+# Platform-reviewed application prerequisites remain in the application repository.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: tenant-{{ $name }}-prerequisites
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: '-8'}
+spec:
+  sourceRepos: [{{ $app.repositoryUrl | quote }}]
+  destinations:
+    - {server: 'https://kubernetes.default.svc', namespace: {{ $app.namespace | quote }}}
+    {{- if $edge }}
+    - {server: 'https://kubernetes.default.svc', namespace: {{ $edge | quote }}}
+    {{- end }}
+  clusterResourceWhitelist:
+    - {group: apiextensions.k8s.io, kind: CustomResourceDefinition}
+    - {group: admissionregistration.k8s.io, kind: ValidatingAdmissionPolicy}
+    - {group: admissionregistration.k8s.io, kind: ValidatingAdmissionPolicyBinding}
+  namespaceResourceWhitelist:
+    - {group: cert-manager.io, kind: Certificate}
+    - {group: traefik.io, kind: IngressRoute}
+    - {group: '', kind: ServiceAccount}
+    - {group: '', kind: ResourceQuota}
+    - {group: '', kind: LimitRange}
+    - {group: rbac.authorization.k8s.io, kind: Role}
+    - {group: rbac.authorization.k8s.io, kind: RoleBinding}
+    - {group: coordination.k8s.io, kind: Lease}
+    - {group: networking.k8s.io, kind: NetworkPolicy}
+    - {group: external-secrets.io, kind: SecretStore}
+    - {group: external-secrets.io, kind: ExternalSecret}
+    - {group: security.istio.io, kind: PeerAuthentication}
+    - {group: security.istio.io, kind: AuthorizationPolicy}
+    - {group: networking.istio.io, kind: Gateway}
+    - {group: networking.istio.io, kind: VirtualService}
+    - {group: monitoring.coreos.com, kind: ServiceMonitor}
+    - {group: monitoring.coreos.com, kind: PrometheusRule}
+    - {group: '', kind: ConfigMap}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workload-{{ $name }}-prerequisites
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: '-5'}
+spec:
+  project: tenant-{{ $name }}-prerequisites
+  source:
+    repoURL: {{ $app.repositoryUrl | quote }}
+    targetRevision: {{ $app.revision | quote }}
+    path: {{ $app.extensionPath | quote }}
+    helm:
+      valuesObject:
+        {{- toYaml ($app.values | default dict) | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: {{ $app.namespace | quote }}}
+  ignoreDifferences:
+    - {group: coordination.k8s.io, kind: Lease, jsonPointers: [/spec/holderIdentity, /spec/renewTime, /spec/acquireTime, /spec/leaseTransitions]}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true, RespectIgnoreDifferences=true]
+{{- end }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workload-{{ $name }}-runtime
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: '0'}
+spec:
+  project: tenant-{{ $name }}-runtime
+  source:
+    repoURL: {{ $app.repositoryUrl | quote }}
+    targetRevision: {{ $app.revision | quote }}
+    path: {{ $app.path | quote }}
+    helm:
+      valuesObject:
+        {{- toYaml ($app.values | default dict) | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: {{ $app.namespace | quote }}}
+  ignoreDifferences:
+    - {group: apps, kind: Deployment, jsonPointers: [/spec/replicas]}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true, RespectIgnoreDifferences=true]
+{{- end }}

@@ -1,0 +1,2 @@
+project_id = "YOUR_STAGING_PROJECT"
+bucket_name = "YOUR_UNIQUE_STAGING_STATE_BUCKET"

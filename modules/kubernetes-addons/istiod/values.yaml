@@ -1,0 +1,6 @@
+cni:
+  enabled: true
+meshConfig:
+  accessLogFile: /dev/stdout
+  defaultConfig:
+    holdApplicationUntilProxyStarts: true

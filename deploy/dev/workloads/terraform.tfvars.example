@@ -1,0 +1,6 @@
+kubeconfig_path = "/ABSOLUTE/PATH/TO/PRIVATE_OPERATOR_KUBECONFIG"
+kube_context = "EXPLICIT_GKE_CONTEXT"
+repository_url = "https://github.com/YOUR_ORG/YOUR_PLATFORM.git"
+revision = "REVIEWED_40_CHARACTER_COMMIT"
+# Application teams publish their own repository and release; platform owners register it.
+workloads = {}

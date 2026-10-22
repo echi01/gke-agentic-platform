@@ -1,0 +1,25 @@
+configs:
+  cm:
+    admin.enabled: false
+    exec.enabled: false
+    resource.customizations.health.argoproj.io_Application: "hs = { status = \"Progressing\"\
+      , message = \"Waiting for child reconciliation\" }\nif obj.status ~= nil and\
+      \ obj.status.health ~= nil then\n  hs.status = obj.status.health.status\n  hs.message\
+      \ = obj.status.health.message or \"\"\nend\nreturn hs\n"
+  params:
+    server.insecure: false
+  rbac:
+    policy.default: role:readonly
+    policy.csv: 'g, platform-operators, role:admin
+
+      '
+server:
+  replicas: 2
+  service:
+    type: ClusterIP
+redis:
+  enabled: false
+redis-ha:
+  enabled: true
+repoServer:
+  replicas: 2

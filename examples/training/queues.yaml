@@ -1,0 +1,36 @@
+# Apply only after Kueue/JobSet installation and GPU quota/driver acceptance.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: training
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata:
+  name: gpu-l4
+spec:
+  nodeLabels: {workload-class: gpu}
+  nodeTaints: [{key: nvidia.com/gpu, value: present, effect: NoSchedule}]
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: training
+spec:
+  namespaceSelector:
+    matchLabels: {kubernetes.io/metadata.name: training}
+  resourceGroups:
+    - coveredResources: [cpu, memory, nvidia.com/gpu]
+      flavors:
+        - name: gpu-l4
+          resources:
+            - {name: cpu, nominalQuota: "4"}
+            - {name: memory, nominalQuota: 12Gi}
+            - {name: nvidia.com/gpu, nominalQuota: "1"}
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata: {name: training, namespace: training}
+spec: {clusterQueue: training}

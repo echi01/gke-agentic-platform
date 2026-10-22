@@ -1,0 +1,5 @@
+apiVersion: v2
+name: addons
+version: 1.0.0
+type: application
+description: Platform add-on Applications using locally stored chart source

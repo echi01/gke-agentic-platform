@@ -1,0 +1,5 @@
+apiVersion: v2
+name: certificate-issuers
+version: 1.0.0
+description: Platform-owned ACME issuer configuration
+type: application

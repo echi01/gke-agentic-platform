@@ -1,0 +1,11 @@
+misconfigurations:
+  - id: KSV-0053
+    paths:
+      - kubernetes-mcp-rendered.yaml
+      - .artifacts/kubernetes-mcp-rendered.yaml
+    expired_at: 2027-01-31
+    statement: >-
+      Private stdio MCP requires Kubernetes exec into exactly platform-mcp-0.
+      The Role allows only create on that named pod subresource. Structural
+      checks reject additional exec grants; native tests deny unrestricted exec,
+      Secrets, writes and cross-namespace access. Review by the expiry date.

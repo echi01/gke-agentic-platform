@@ -1,0 +1,12 @@
+kubeconfig_path = "/ABSOLUTE/PATH/TO/PRIVATE_OPERATOR_KUBECONFIG"
+kube_context = "EXPLICIT_GKE_CONTEXT"
+repository_url = "https://github.com/YOUR_ORG/YOUR_PLATFORM.git"
+revision = "REVIEWED_40_CHARACTER_COMMIT"
+manage_via_gitops = true
+# Supply a real, scanned image digest for the platform MCP server.
+addon_values = {
+  kubernetes-mcp = {
+    image = "YOUR_REGISTRY/platform-mcp@sha256:YOUR_DIGEST"
+    apiCidrs = ["KUBERNETES_SERVICE_IP/32", "PRIVATE_CONTROL_PLANE_IP/32"]
+  }
+}

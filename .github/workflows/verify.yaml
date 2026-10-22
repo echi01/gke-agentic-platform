@@ -1,0 +1,41 @@
+name: Verify Google platform
+on: [push, pull_request, workflow_dispatch]
+permissions: {contents: read}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: {python-version: '3.13'}
+      - name: Install pinned verification tools
+        run: |
+          python scripts/install-tools.py --bin-dir "$RUNNER_TEMP/platform-tools"
+          echo "$RUNNER_TEMP/platform-tools" >> "$GITHUB_PATH"
+          python -m pip install -r requirements-dev.lock
+      - name: Verify source, charts, Terraform and ownership contracts
+        run: python scripts/check.py --terraform
+      - name: Scan owned infrastructure configuration
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          scan-type: config
+          scan-ref: modules
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - name: Scan rendered operational runtime
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          scan-type: config
+          scan-ref: .artifacts/kubernetes-mcp-rendered.yaml
+          trivyignores: security/trivyignore.yaml
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - name: Build operational MCP
+        run: docker build -t platform-mcp:ci operations/mcp
+      - name: Scan operational MCP image
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          image-ref: platform-mcp:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
