@@ -24,7 +24,7 @@ variable "workloads" {
 resource "helm_release" "workloads_parent" {
   name      = "platform-workloads-root"
   namespace = "argocd"
-  chart     = abspath("${path.module}/../../charts/argocd-application")
+  chart     = "${path.module}/../../charts/argocd-application"
   values = [yamlencode({ name = "platform-workloads", repositoryUrl = var.repository_url,
   revision = var.revision, path = "charts/workloads", parameters = { workloads = var.workloads } })]
 }

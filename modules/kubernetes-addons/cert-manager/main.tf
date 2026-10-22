@@ -11,7 +11,7 @@ module "addon" {
   manage_via_gitops = var.manage_via_gitops
   release_name      = "cert-manager"
   namespace         = "cert-manager"
-  chart_path        = abspath("${path.module}/../../../${local.definition.path}")
+  chart_path        = "${path.module}/../../../${local.definition.path}"
   git_path          = local.definition.path
   chart_version     = local.definition.version
   chart_values      = local.chart_values

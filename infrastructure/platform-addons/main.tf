@@ -169,7 +169,7 @@ resource "helm_release" "addons_parent" {
   count     = var.manage_via_gitops ? 1 : 0
   name      = "platform-addons-root"
   namespace = "argocd"
-  chart     = abspath("${path.module}/../../charts/argocd-application")
+  chart     = "${path.module}/../../charts/argocd-application"
   values = [yamlencode({ name = "platform-addons", repositoryUrl = var.repository_url,
     revision = var.revision, path = "charts/addons", createProject = true,
   parameters = { repositoryUrl = var.repository_url, revision = var.revision, addons = local.addons } })]
