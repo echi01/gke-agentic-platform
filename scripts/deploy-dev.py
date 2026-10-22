@@ -64,6 +64,20 @@ def kubeconfig(folder):
     tunnel.terminate(); log.close()
     raise RuntimeError('Private operator tunnel did not become available.')
 
+def retire_superseded_sync(config, name):
+    # A running Argo sync retains its original source, even after Terraform
+    # promotes the parent. Retire only that obsolete operation; Argo applies Git.
+    command = [KUBECTL, '--kubeconfig', str(config), '-n', 'argocd']
+    app = json.loads(capture(command + ['get', 'application', name, '-o', 'json']))
+    state = app.get('status', {}).get('operationState', {})
+    desired = app['spec']['source']['targetRevision']
+    running = state.get('operation', {}).get('sync', {}).get('revision')
+    if app.get('operation') and state.get('phase') == 'Running' and running and running != desired:
+        patch = [{'op': 'test', 'path': '/metadata/resourceVersion', 'value': app['metadata']['resourceVersion']},
+                 {'op': 'replace', 'path': '/status/operationState/phase', 'value': 'Terminating'}]
+        subprocess.run(command + ['patch', 'application', name, '--type=json', '-p', json.dumps(patch)], check=True)
+        print('Retired superseded sync for ' + name + '; Argo will reconcile the committed revision.')
+
 def application_checkout(folder):
     release = json.loads((ROOT / 'deploy/dev/workloads/release.auto.tfvars.json').read_text())['workloads']['progressbar-dev']
     key = folder / 'application-key'; key.write_text(json.loads(secret('platform-dev-argocd-application'))['sshPrivateKey']); key.chmod(0o600)
@@ -106,6 +120,8 @@ def main():
                 if stage == 'application-data':
                     target = application_checkout(folder) / 'deploy/kubernetes/terraform/environments/dev'
                 terraform(target, args.apply, extra)
+                if args.apply and stage in ['addons', 'workloads']:
+                    retire_superseded_sync(config, 'platform-' + stage)
         finally:
             tunnel.terminate()
             try: tunnel.wait(timeout=10)
