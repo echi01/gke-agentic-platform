@@ -1,82 +1,74 @@
 {
-  "verifiedAt": "2026-10-22T04:53:34.754328+00:00",
-  "scope": "Isolated GKE dev backend deployment; existing public website and installed apps preserved",
-  "endpoint": "https://dev.progressbar.vip/health",
-  "deployment": {
-    "repository": "echi01/gke-agentic-platform",
-    "sourceCommit": "aa221b81ef54b79addc0472237efc54fcf1cbe34",
-    "workflow": "https://github.com/echi01/gke-agentic-platform/actions/runs/39724276247",
-    "conclusion": "success"
+  "verifiedAt": "2026-10-22T12:19:13.930046+00:00",
+  "scope": "Private GKE dev application and operator dashboards; production landing page and installed apps preserved",
+  "access": {
+    "publicIngress": false,
+    "operatorConnection": "Google IAP and authenticated Kubernetes port-forwards bound to 127.0.0.1",
+    "urls": {
+      "app": "http://127.0.0.1:14173/",
+      "argocd": "http://127.0.0.1:18080/",
+      "grafana": "http://127.0.0.1:13000/",
+      "prometheus": "http://127.0.0.1:19090/",
+      "traefik": "http://127.0.0.1:18081/dashboard/",
+      "istioKiali": "http://127.0.0.1:12001/kiali/"
+    },
+    "restartCommand": "python scripts/dev-dashboards.py"
   },
-  "dns": {
-    "registrar": "Namecheap",
-    "provider": "Google Cloud DNS",
-    "managedBy": "Terraform",
-    "publicIPv4": "34.136.30.69",
-    "cloudflareInDnsPath": false,
-    "publicResolverVerified": true
-  },
-  "tls": {
-    "hostname": "dev.progressbar.vip",
-    "chainAndHostnameValidated": true,
-    "issuer": [
-      {
-        "countryName": "US"
-      },
-      {
-        "organizationName": "Let's Encrypt"
-      },
-      {
-        "commonName": "YR2"
-      }
-    ],
-    "subjectAltName": [
-      [
-        "DNS",
-        "dev.progressbar.vip"
-      ]
-    ],
-    "notAfter": "Jan 20 03:26:29 2027 GMT",
-    "protocol": "TLSv1.3"
+  "cloudIngress": {
+    "forwardingRules": 0,
+    "backendServices": 0,
+    "reservedDevIngressAddresses": 0,
+    "devARecordRemovedByTerraform": true
   },
   "gitops": {
-    "applications": 14,
-    "allSyncedAndHealthy": true,
-    "apiReadyReplicas": 2,
-    "operatorReadyReplicas": 2
-  },
-  "monitoring": {
-    "applicationTargetsUp": 4,
-    "customHpaMetric": "http_requests_per_second",
-    "cpuAndCustomMetricsActive": true
+    "applications": 15,
+    "allSyncedAndHealthy": true
   },
   "liveAcceptance": {
-    "health": true,
-    "firestoreReadiness": true,
+    "appRootHtml": true,
+    "realAccountSignIn": true,
     "unauthenticatedRejected": true,
-    "authenticatedRead": true,
+    "resumedExistingBar": true,
     "agentStatus": "completed",
     "model": "google/gemini-2.5-flash",
     "resultKind": "plan",
+    "traceKinds": [
+      "research_proposed",
+      "source_retrieved",
+      "plan_proposed"
+    ],
     "projectCreated": true,
-    "generatedFragments": 15,
+    "generatedFragments": 12,
     "onePersonalBarEnforced": true,
-    "acceptanceIdempotent": true,
-    "publicHttpsVerified": true
+    "normalPublicHttps": false,
+    "privateOperatorTunnel": true
+  },
+  "browserAcceptance": {
+    "accountCreatedThroughUi": true,
+    "privateSignIn": true,
+    "savedProjectReloads": true,
+    "segmentAndFragmentWorkspaceOpen": true
   },
   "testResults": {
-    "backendPassed": 72,
+    "backendPassed": 74,
+    "interfacePassed": 47,
     "controllerAndWorkflowPassed": 12,
     "infrastructureMcpPassed": 5,
-    "renderedChartIntegrations": 16
+    "dnsTerraformPassed": 3,
+    "deterministicKialiRendering": "passed"
   },
   "mainWebsite": {
     "unchanged": true,
     "sha256": "bd4af88e41c49ab74062adc8a40f2aa646187dffaefcad02a02c28c76c832c93"
   },
   "limitations": [
-    "This Mac still caches a failed DNS lookup, although Google public DNS returns the correct address. HTTPS was verified with a process-local address override and full CA and hostname validation.",
+    "Private localhost links are accessible on the operator computer only; the dev domain is no longer publicly served.",
     "Live research acceptance retrieved a supplied reference URL; general topic search is not configured.",
-    "This verifies the dev backend, not production acceptance or App Store distribution."
-  ]
+    "This verifies the private dev UI and backend, not native account integration, production acceptance, load capacity or App Store distribution."
+  ],
+  "deployment": {
+    "sourceCommit": "64f3bab6cde4bfe4823eeee30ca6d31e7bb06b4a",
+    "workflow": "https://github.com/echi01/gke-agentic-platform/actions/runs/39776900558",
+    "conclusion": "success"
+  }
 }
