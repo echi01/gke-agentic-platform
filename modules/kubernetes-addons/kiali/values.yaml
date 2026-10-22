@@ -1,0 +1,22 @@
+auth:
+  strategy: anonymous
+deployment:
+  view_only_mode: true
+  cluster_wide_access: true
+  service_type: ClusterIP
+  ingress:
+    enabled: false
+  resources:
+    requests: {cpu: 50m, memory: 128Mi}
+    limits: {cpu: 500m, memory: 512Mi}
+external_services:
+  prometheus:
+    url: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+  grafana:
+    enabled: true
+    internal_url: http://kube-prometheus-stack-grafana.monitoring.svc
+    external_url: http://127.0.0.1:13000
+  tracing:
+    enabled: false
+server:
+  web_root: /kiali

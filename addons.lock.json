@@ -137,5 +137,13 @@
     "version": "1.0.0",
     "chart": "certificate-issuers",
     "source": "charts/certificate-issuers"
+  },
+  "kiali": {
+    "repository": "https://kiali.org/helm-charts",
+    "chart": "kiali-server",
+    "version": "2.33.0",
+    "path": "vendor/helm/kiali/2.33.0/kiali-server",
+    "archiveSha256": "6d0c1b4e6ccc30b210b3784b3b257440161e5ec39e97bef93f0f41124d5320bd",
+    "treeSha256": "c0118af53fb5f5f476cb6b79c1e38cddc7bc7419f1e0aff6e39f1d441fb9fb56"
   }
 }

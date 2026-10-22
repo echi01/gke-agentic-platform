@@ -19,7 +19,7 @@ variable "enabled_addons" {
   type    = map(bool)
   default = {}
   validation {
-    condition     = alltrue([for name in keys(var.enabled_addons) : contains(["traefik", "certificate-issuers", "kube-prometheus-stack", "prometheus-adapter", "external-secrets", "istio-base", "istiod", "istio-cni", "istio-gateway", "kueue", "jobset", "cert-manager", "argo-rollouts", "keda", "kubernetes-mcp"], name)])
+    condition     = alltrue([for name in keys(var.enabled_addons) : contains(["kiali", "traefik", "certificate-issuers", "kube-prometheus-stack", "prometheus-adapter", "external-secrets", "istio-base", "istiod", "istio-cni", "istio-gateway", "kueue", "jobset", "cert-manager", "argo-rollouts", "keda", "kubernetes-mcp"], name)])
     error_message = "Use a supported add-on key; ArgoCD is always bootstrapped."
   }
 }
@@ -138,6 +138,13 @@ module "traefik" {
   manage_via_gitops = var.manage_via_gitops
   values_override   = lookup(var.addon_values, "traefik", {})
 }
+module "kiali" {
+  depends_on        = [module.istiod, module.kube_prometheus_stack]
+  source            = "../../modules/kubernetes-addons/kiali"
+  enabled           = lookup(var.enabled_addons, "kiali", false)
+  manage_via_gitops = var.manage_via_gitops
+  values_override   = lookup(var.addon_values, "kiali", {})
+}
 module "certificate_issuers" {
   depends_on        = [module.cert_manager]
   source            = "../../modules/kubernetes-addons/certificate-issuers"
@@ -148,6 +155,7 @@ module "certificate_issuers" {
 
 locals {
   addons = { for name, config in {
+    "kiali"                 = module.kiali.gitops_config
     "traefik"               = module.traefik.gitops_config
     "certificate-issuers"   = module.certificate_issuers.gitops_config
     "cert-manager"          = module.cert_manager.gitops_config
