@@ -1,0 +1,48 @@
+name: Reconcile Google dev
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: google-platform-dev
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - id: target
+        name: Read committed environment
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = json.loads(Path('deploy/dev/environment.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+            out.write(f"provider=projects/{p['projectNumber']}/locations/global/workloadIdentityPools/platform-dev-github/providers/github\n")
+            out.write(f"account=platform-dev-deployer@{p['projectId']}.iam.gserviceaccount.com\n")
+            out.write(f"project={p['projectId']}\n")
+          PY
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          workload_identity_provider: ${{ steps.target.outputs.provider }}
+          service_account: ${{ steps.target.outputs.account }}
+          project_id: ${{ steps.target.outputs.project }}
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          install_components: gke-gcloud-auth-plugin
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Install verified pinned tools
+        run: |
+          python scripts/install-tools.py --bin-dir "$RUNNER_TEMP/platform-tools"
+          echo "$RUNNER_TEMP/platform-tools" >> "$GITHUB_PATH"
+          python -m pip install -r requirements-dev.lock
+      - name: Validate source before deployment
+        run: python scripts/check.py
+      - name: Reconcile committed dev state
+        run: python scripts/deploy-dev.py --apply
