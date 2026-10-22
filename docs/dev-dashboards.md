@@ -4,6 +4,7 @@ Run `python scripts/dev-dashboards.py` after the dev add-ons reconcile. Authenti
 
 | Interface | Local URL |
 | --- | --- |
+| Progress Bar app | http://127.0.0.1:14173/ |
 | Argo CD | http://127.0.0.1:18080/ |
 | Grafana | http://127.0.0.1:13000/ |
 | Prometheus | http://127.0.0.1:19090/ |
@@ -14,4 +15,4 @@ Argo CD and Grafana require sign-in. Use `--credentials-file /absolute/private/n
 
 Keep the command running. Ctrl-C closes the tunnels. The command reconnects individual forwards after pod rollouts. If the underlying IAP connection ends, restart the command. `--only grafana prometheus` opens a subset. No dashboard DNS records, public ingress, or additional cloud load balancers are created.
 
-The separate public application ingress currently uses **one billable Google external passthrough load balancer**, shared by Traefik routes. This script does not remove that existing application ingress. Running Traefik or Istio does not, by itself, eliminate that Google charge.
+The dev profile now sets `publicIngress: false`: the app and every dashboard are private, Traefik is ClusterIP, and Terraform removes the former external IP and dev A record after the service controller has deleted its load balancer. No cloud load balancer is required for these port-forwards. Google compute, storage and other existing service costs still apply. The production website stays on its existing hosting and DNS records.

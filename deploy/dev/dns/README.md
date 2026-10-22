@@ -21,3 +21,7 @@ The new parent authoritative servers are `ns-cloud-c1.googledomains.com` through
 ## Verification
 
 The Google DNS record and reserved address have been applied through Terraform. A subsequent real plan reports no changes. An independent query to Google's authoritative nameservers returns the same address as the reserved Compute Engine address. The DNS module also checks fully qualified names with mocked Terraform plans. The existing public website's content is unchanged.
+
+## Private dev profile
+
+`deploy/dev/environment.json` now sets `publicIngress: false`. Terraform keeps domain authority and the existing production website records, but removes the dev A record and its reserved external IP. Argo first changes Traefik to ClusterIP; the deployment script waits for Google to release its forwarding rules before reconciling DNS. The app and dashboards are reached through `scripts/dev-dashboards.py`, without a cloud load balancer.

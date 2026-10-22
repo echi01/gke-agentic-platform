@@ -8,6 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location('dev_deploy', ROOT / 'scripts/deploy-dev.py')
 DEPLOY = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(DEPLOY)
 TARGETS = {
+    'app': ('progressbar-dev', 'service/progressbar-api', 14173, 8080, '/'),
     'argocd': ('argocd', 'service/argo-cd-argocd-server', 18080, 80, '/'),
     'grafana': ('monitoring', 'service/kube-prometheus-stack-grafana', 13000, 80, '/'),
     'prometheus': ('monitoring', 'service/kube-prometheus-stack-prometheus', 19090, 9090, '/'),

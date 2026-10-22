@@ -28,24 +28,37 @@ resource "google_dns_managed_zone" "environment" {
   depends_on = [google_project_service.dns]
   lifecycle { prevent_destroy = true }
 }
+variable "public_ingress_enabled" {
+  type    = bool
+  default = true
+}
+moved {
+  from = google_compute_address.ingress
+  to   = google_compute_address.ingress[0]
+}
+moved {
+  from = google_dns_record_set.ingress
+  to   = google_dns_record_set.ingress[0]
+}
 resource "google_compute_address" "ingress" {
+  count        = var.public_ingress_enabled ? 1 : 0
   project      = var.project_id
   region       = var.region
   name         = "${var.name}-ingress"
   address_type = "EXTERNAL"
   network_tier = "PREMIUM"
-  lifecycle { prevent_destroy = true }
 }
 resource "google_dns_record_set" "ingress" {
+  count        = var.public_ingress_enabled ? 1 : 0
   project      = var.project_id
   managed_zone = google_dns_managed_zone.environment.name
   name         = var.dns_name
   type         = "A"
   ttl          = 300
-  rrdatas      = [google_compute_address.ingress.address]
+  rrdatas      = [google_compute_address.ingress[0].address]
 }
 output "name_servers" { value = google_dns_managed_zone.environment.name_servers }
 output "zone_name" { value = google_dns_managed_zone.environment.name }
 output "dns_name" { value = var.dns_name }
-output "ingress_ip" { value = google_compute_address.ingress.address }
-output "ingress_address_name" { value = google_compute_address.ingress.name }
+output "ingress_ip" { value = try(google_compute_address.ingress[0].address, null) }
+output "ingress_address_name" { value = try(google_compute_address.ingress[0].name, null) }

@@ -94,6 +94,17 @@ def application_checkout(folder):
     subprocess.run(['git', '-C', str(checkout), 'checkout', '-q', 'FETCH_HEAD'], check=True)
     return checkout
 
+def wait_for_private_ingress(config):
+    # Argo must remove the public Service before Terraform releases its reserved IP.
+    # Wait for Google's service controller; do not delete forwarding rules by hand.
+    for _ in range(100):
+        service = json.loads(capture([KUBECTL, '--kubeconfig', str(config), '-n', 'traefik', 'get', 'service', 'traefik', '-o', 'json']))
+        addresses = json.loads(cloud('compute', 'addresses', 'list', '--regions=' + PROFILE['region'], '--filter=name=platform-dev-ingress', '--format=json'))
+        if service['spec']['type'] == 'ClusterIP' and not any(address.get('users') for address in addresses):
+            return
+        time.sleep(3)
+    raise RuntimeError('The service controller has not released the former public ingress. DNS/IP resources were preserved; retry after the Argo Traefik application is healthy.')
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--apply', action='store_true')
@@ -105,12 +116,16 @@ def main():
             if os.environ.get('GITHUB_ACTIONS') == 'true':
                 raise RuntimeError('Root repository bootstrap uses an independently authenticated GitHub administrator; the deployment workflow cannot grant itself repository access.')
             extra['GITHUB_TOKEN'] = capture(['gh', 'auth', 'token'])
+        if args.stage == 'dns' and args.apply and not PROFILE.get('publicIngress', True):
+            addresses = json.loads(cloud('compute', 'addresses', 'list', '--regions=' + PROFILE['region'], '--filter=name=platform-dev-ingress', '--format=json'))
+            if any(address.get('users') for address in addresses):
+                raise RuntimeError('Run --stage all first: private ingress must reconcile before Terraform releases the external address.')
         terraform(ROOT / 'deploy/dev' / args.stage, args.apply, extra)
         return
     with tempfile.TemporaryDirectory(prefix='platform-deploy-') as temporary:
         folder = pathlib.Path(temporary); folder.chmod(0o700)
         if args.stage == 'all':
-            for stage in ['gke', 'dns']:
+            for stage in (['gke', 'dns'] if PROFILE.get('publicIngress', True) else ['gke']):
                 terraform(ROOT / 'deploy/dev' / stage, args.apply)
         config, tunnel, log = kubeconfig(folder)
         try:
@@ -124,6 +139,9 @@ def main():
                 terraform(target, args.apply, extra)
                 if args.apply and stage in ['addons', 'workloads']:
                     retire_superseded_sync(config, 'platform-' + stage)
+                if stage == 'addons' and args.stage == 'all' and not PROFILE.get('publicIngress', True):
+                    if args.apply: wait_for_private_ingress(config)
+                    terraform(ROOT / 'deploy/dev/dns', args.apply)
         finally:
             tunnel.terminate()
             try: tunnel.wait(timeout=10)

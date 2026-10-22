@@ -35,6 +35,15 @@ if __name__=="__main__":
    assert exec_grants==[("connect-platform-mcp",{"apiGroups":[""],"resources":["pods/exec"],"resourceNames":["platform-mcp-0"],"verbs":["create"]})], "Unexpected MCP execution authority"
 
   configs[name]={"name":name,"namespace":name,"path":item["path"],"version":item["version"],"values":vals,"wave":0}
+ # The committed private dev profile must not recreate public load balancers.
+ profile=json.loads((ROOT/"deploy/dev/environment.json").read_text())
+ if not profile.get("publicIngress",True):
+  dev=json.loads((ROOT/"deploy/dev/addons/release.auto.tfvars.json").read_text())
+  private_traefik=render(helm,ROOT/lock["traefik"]["path"],dev["addon_values"]["traefik"],"traefik")
+  services=[d for d in private_traefik if d["kind"]=="Service"]
+  assert services and all(d["spec"]["type"]=="ClusterIP" and not d["spec"].get("loadBalancerClass") for d in services)
+  assert all("traefik" not in [p["name"] for p in d["spec"]["ports"]] for d in services)
+  assert all(d["spec"]["entryPoints"]==["traefik"] for d in private_traefik if d["kind"]=="IngressRoute")
  configs.pop("argo-cd")
  addons=render(helm,ROOT/"charts/addons",{"repositoryUrl":"https://github.com/example/platform.git","revision":"a"*40,"addons":configs})
  assert len([d for d in addons if d["kind"]=="Application"])==len(configs)

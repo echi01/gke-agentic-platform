@@ -50,12 +50,13 @@ locals {
   desired_traefik         = lookup(var.addon_values, "traefik", {})
   desired_ingress_service = lookup(local.desired_traefik, "service", {})
   ingress_service = merge(local.desired_ingress_service, {
-    annotations = merge(lookup(local.desired_ingress_service, "annotations", {}), {
-      "networking.gke.io/load-balancer-ip-addresses" = data.terraform_remote_state.dns.outputs.dns.ingress_address_name
-    })
+    annotations = merge(lookup(local.desired_ingress_service, "annotations", {}), try(local.environment.publicIngress, true) ? {
+      "networking.gke.io/load-balancer-ip-addresses" = data.terraform_remote_state.dns[0].outputs.dns.ingress_address_name
+    } : {})
   })
 }
 data "terraform_remote_state" "dns" {
+  count   = try(local.environment.publicIngress, true) ? 1 : 0
   backend = "gcs"
   config = {
     bucket = local.environment.stateBucket
