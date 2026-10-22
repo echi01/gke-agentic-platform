@@ -29,7 +29,7 @@ module "platform" {
   zones                   = var.zones
   environment             = "dev"
   cpu_min_nodes           = 1
-  cpu_max_nodes           = 2
+  cpu_max_nodes           = 3
   enable_gpu              = var.enable_gpu
   enable_private_operator = true
   machine_type            = "e2-standard-2"

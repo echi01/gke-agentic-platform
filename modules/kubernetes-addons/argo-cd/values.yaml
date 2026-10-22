@@ -6,6 +6,18 @@ configs:
       , message = \"Waiting for child reconciliation\" }\nif obj.status ~= nil and\
       \ obj.status.health ~= nil then\n  hs.status = obj.status.health.status\n  hs.message\
       \ = obj.status.health.message or \"\"\nend\nreturn hs\n"
+    resource.exclusions: "- apiGroups:\n  - ''\n  - discovery.k8s.io\n  kinds:\n \
+      \ - Endpoints\n  - EndpointSlice\n- apiGroups:\n  - authentication.k8s.io\n\
+      \  - authorization.k8s.io\n  kinds:\n  - SelfSubjectReview\n  - TokenReview\n\
+      \  - LocalSubjectAccessReview\n  - SelfSubjectAccessReview\n  - SelfSubjectRulesReview\n\
+      \  - SubjectAccessReview\n- apiGroups:\n  - certificates.k8s.io\n  kinds:\n\
+      \  - CertificateSigningRequest\n- apiGroups:\n  - cert-manager.io\n  kinds:\n\
+      \  - CertificateRequest\n- apiGroups:\n  - cilium.io\n  kinds:\n  - CiliumIdentity\n\
+      \  - CiliumEndpoint\n  - CiliumEndpointSlice\n- apiGroups:\n  - kyverno.io\n\
+      \  - reports.kyverno.io\n  - wgpolicyk8s.io\n  kinds:\n  - PolicyReport\n  -\
+      \ ClusterPolicyReport\n  - EphemeralReport\n  - ClusterEphemeralReport\n  -\
+      \ AdmissionReport\n  - ClusterAdmissionReport\n  - BackgroundScanReport\n  -\
+      \ ClusterBackgroundScanReport\n  - UpdateRequest\n"
   params:
     server.insecure: false
   rbac:
