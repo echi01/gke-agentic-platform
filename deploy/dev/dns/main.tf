@@ -11,6 +11,7 @@ provider "google" {
   region  = local.environment.region
 }
 module "dns" {
+  count                  = try(local.environment.runtimeEnabled, true) ? 1 : 0
   source                 = "../../../modules/dns"
   public_ingress_enabled = try(local.environment.publicIngress, true)
   project_id             = local.environment.projectId
@@ -18,4 +19,8 @@ module "dns" {
   name                   = "platform-dev"
   dns_name               = "${local.environment.domain}."
 }
-output "dns" { value = module.dns }
+moved {
+  from = module.dns
+  to   = module.dns[0]
+}
+output "dns" { value = try(module.dns[0], null) }

@@ -5,7 +5,6 @@ resource "google_dns_managed_zone" "parent" {
   dns_name    = "${local.environment.parentDomain}."
   description = "Public domain DNS managed by Terraform on Google Cloud"
   visibility  = "public"
-  depends_on  = [module.dns]
   lifecycle { prevent_destroy = true }
 }
 resource "google_dns_record_set" "parent" {
@@ -18,11 +17,17 @@ resource "google_dns_record_set" "parent" {
   rrdatas      = each.value.rrdatas
 }
 resource "google_dns_record_set" "dev_delegation" {
+  count        = try(local.environment.runtimeEnabled, true) ? 1 : 0
   project      = local.environment.projectId
   managed_zone = google_dns_managed_zone.parent.name
   name         = "${local.environment.domain}."
   type         = "NS"
   ttl          = 300
-  rrdatas      = module.dns.name_servers
+  rrdatas      = module.dns[0].name_servers
 }
 output "parent_name_servers" { value = google_dns_managed_zone.parent.name_servers }
+
+moved {
+  from = google_dns_record_set.dev_delegation
+  to   = google_dns_record_set.dev_delegation[0]
+}

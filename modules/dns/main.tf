@@ -26,7 +26,6 @@ resource "google_dns_managed_zone" "environment" {
   visibility  = "public"
   dnssec_config { state = "on" }
   depends_on = [google_project_service.dns]
-  lifecycle { prevent_destroy = true }
 }
 variable "public_ingress_enabled" {
   type    = bool
