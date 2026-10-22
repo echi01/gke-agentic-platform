@@ -1,9 +1,9 @@
 deployment:
   replicas: 1
   podAnnotations:
-    sidecar.istio.io/inject: "true"
+    sidecar.istio.io/inject: 'true'
     proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'
-    traffic.sidecar.istio.io/excludeInboundPorts: "8000,8443,8080,9100"
+    traffic.sidecar.istio.io/excludeInboundPorts: 8000,8443,8080,9100
 providers:
   kubernetesIngress:
     enabled: true
@@ -14,11 +14,16 @@ providers:
 serviceAccount:
   name: traefik
 resources:
-  requests: {cpu: 100m, memory: 128Mi}
-  limits: {cpu: "1", memory: 512Mi}
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: '1'
+    memory: 512Mi
 ingressRoute:
   dashboard:
     enabled: false
 service:
-  annotations:
-    networking.gke.io/load-balancer-type: External
+  spec:
+    type: LoadBalancer
+    loadBalancerClass: networking.gke.io/l4-regional-external

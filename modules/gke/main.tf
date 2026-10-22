@@ -227,6 +227,10 @@ resource "google_container_node_pool" "cpu" {
     auto_repair  = true
     auto_upgrade = true
   }
+  upgrade_settings {
+    max_surge       = var.environment == "dev" ? 0 : 1
+    max_unavailable = var.environment == "dev" ? 1 : 0
+  }
   node_config {
     machine_type    = var.machine_type
     service_account = google_service_account.nodes.email
