@@ -22,7 +22,9 @@ provider "google" {
   project = var.project_id
   region  = var.region
 }
+locals { configuration = jsondecode(file("${path.module}/../environment.json")) }
 module "platform" {
+  deletion_protection     = try(local.configuration.runtimeEnabled, true)
   source                  = "../../../infrastructure/gke-platform"
   project_id              = var.project_id
   region                  = var.region

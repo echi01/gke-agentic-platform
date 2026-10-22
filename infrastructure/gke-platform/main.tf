@@ -43,7 +43,7 @@ module "gke" {
   gpu_machine_type    = "g2-standard-4"
   gpu_type            = "nvidia-l4"
   gpu_max_nodes       = 1
-  deletion_protection = true
+  deletion_protection = var.deletion_protection
   node_cidr           = "10.40.0.0/20"
   pod_cidr            = "10.44.0.0/14"
   service_cidr        = "10.48.0.0/20"
@@ -74,4 +74,9 @@ output "private_operator" {
 variable "machine_type" {
   type    = string
   default = "e2-standard-4"
+}
+
+variable "deletion_protection" {
+  type    = bool
+  default = true
 }

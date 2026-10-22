@@ -9,5 +9,7 @@
   "operatorZone": "us-central1-a",
   "googleAccount": "pb.simon.chi@gmail.com",
   "githubOwner": "echi01",
-  "publicIngress": false
+  "publicIngress": false,
+  "runtimeEnabled": false,
+  "lifecycle": "retiring"
 }

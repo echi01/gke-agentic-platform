@@ -113,6 +113,8 @@ def main():
     parser.add_argument('--apply', action='store_true')
     parser.add_argument('--stage', choices=['gke', 'dns', 'bootstrap', 'automation', 'cluster-bootstrap', 'addons', 'application-data', 'workloads', 'all'], default='all')
     args = parser.parse_args()
+    if not PROFILE.get('runtimeEnabled', True) and args.stage not in ['dns']:
+        raise RuntimeError('The cloud dev runtime is retired. Re-enable it in committed environment.json before provisioning; DNS remains independently manageable.')
     if args.stage in ['gke', 'dns', 'automation', 'bootstrap']:
         extra = {}
         if args.stage == 'bootstrap':

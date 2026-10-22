@@ -42,7 +42,8 @@
       "gke-agentic-platform": "platform-dev-argocd-infrastructure",
       "progressbar-application": "platform-dev-argocd-application",
       "grafana": "platform-dev-grafana-admin"
-    }
+    },
+    "bootstrap_active": "${try(local.environment.runtimeEnabled, true)}"
   },
   "resource": {
     "github_repository": {
@@ -61,13 +62,13 @@
     },
     "tls_private_key": {
       "repository": {
-        "for_each": "${local.repositories}",
+        "for_each": "${local.bootstrap_active ? local.repositories : {}}",
         "algorithm": "ED25519"
       }
     },
     "github_repository_deploy_key": {
       "argocd": {
-        "for_each": "${local.repositories}",
+        "for_each": "${local.bootstrap_active ? local.repositories : {}}",
         "repository": "${github_repository.owned[each.key].name}",
         "title": "Progress Bar dev Argo CD read-only",
         "key": "${tls_private_key.repository[each.key].public_key_openssh}",
@@ -79,7 +80,7 @@
     },
     "google_secret_manager_secret": {
       "bootstrap": {
-        "for_each": "${local.secret_ids}",
+        "for_each": "${local.bootstrap_active ? local.secret_ids : {}}",
         "project": "${local.environment.projectId}",
         "secret_id": "${each.value}",
         "replication": {
@@ -89,19 +90,21 @@
     },
     "google_secret_manager_secret_version": {
       "repository": {
-        "for_each": "${local.repositories}",
+        "for_each": "${local.bootstrap_active ? local.repositories : {}}",
         "secret": "${google_secret_manager_secret.bootstrap[each.key].id}",
         "secret_data": "${jsonencode({sshPrivateKey=tls_private_key.repository[each.key].private_key_openssh})}"
       },
       "grafana": {
         "secret": "${google_secret_manager_secret.bootstrap[\"grafana\"].id}",
-        "secret_data": "${random_password.grafana.result}"
+        "secret_data": "${random_password.grafana[0].result}",
+        "count": "${local.bootstrap_active ? 1 : 0}"
       }
     },
     "random_password": {
       "grafana": {
         "length": 40,
-        "special": false
+        "special": false,
+        "count": "${local.bootstrap_active ? 1 : 0}"
       }
     }
   },
@@ -111,16 +114,18 @@
       "id": "gke-agentic-platform"
     },
     {
-      "to": "github_repository_deploy_key.argocd[\"gke-agentic-platform\"]",
-      "id": "gke-agentic-platform:167255031"
-    },
-    {
       "to": "github_repository.owned[\"progressbar-application\"]",
       "id": "progressbar-application"
+    }
+  ],
+  "moved": [
+    {
+      "from": "random_password.grafana",
+      "to": "random_password.grafana[0]"
     },
     {
-      "to": "github_repository_deploy_key.argocd[\"progressbar-application\"]",
-      "id": "progressbar-application:167255033"
+      "from": "google_secret_manager_secret_version.grafana",
+      "to": "google_secret_manager_secret_version.grafana[0]"
     }
   ]
 }
