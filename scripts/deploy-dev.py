@@ -48,6 +48,9 @@ def kubeconfig(folder):
     path = folder / 'kubeconfig'
     plugin = shutil.which('gke-gcloud-auth-plugin')
     if not plugin:
+        sdk_plugin = pathlib.Path(shutil.which('gcloud') or '/missing/gcloud').resolve().parent / 'gke-gcloud-auth-plugin'
+        if sdk_plugin.is_file(): plugin = str(sdk_plugin)
+    if not plugin:
         raise RuntimeError('Install the official gke-gcloud-auth-plugin before deploying.')
     config = {'apiVersion': 'v1', 'kind': 'Config', 'current-context': 'platform-dev', 'clusters': [{'name': 'platform-dev', 'cluster': {'server': f'https://127.0.0.1:{port}', 'tls-server-name': endpoint, 'certificate-authority-data': cluster['masterAuth']['clusterCaCertificate']}}], 'contexts': [{'name': 'platform-dev', 'context': {'cluster': 'platform-dev', 'user': 'deployer'}}], 'users': [{'name': 'deployer', 'user': {'exec': {'apiVersion': 'client.authentication.k8s.io/v1beta1', 'command': plugin, 'interactiveMode': 'Never', 'provideClusterInfo': True, 'env': [] if not ACCOUNT else [{'name': 'CLOUDSDK_CORE_ACCOUNT', 'value': PROFILE['googleAccount']}]}}}]}
     path.write_text(json.dumps(config)); path.chmod(0o600)
