@@ -1,6 +1,7 @@
 global:
   platform: gke
-cniBinDir: /home/kubernetes/bin
+cni:
+  cniBinDir: /home/kubernetes/bin
 excludeNamespaces:
 - istio-system
 - kube-system
