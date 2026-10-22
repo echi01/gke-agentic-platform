@@ -55,8 +55,16 @@ def main():
             if pending: raise RuntimeError('Timed out waiting for: ' + ', '.join(sorted(pending)))
             print(json.dumps({name: f'http://127.0.0.1:{TARGETS[name][2]}{TARGETS[name][4]}' for name in args.only}, indent=2), flush=True)
             print('All selected tunnels are ready. Keep this command running; Ctrl-C closes them.', flush=True)
-            while tunnel.poll() is None and all(p.poll() is None for p in processes.values()): time.sleep(1)
-            raise RuntimeError('A tunnel ended, possibly after a pod rollout. Run this command again to reconnect.')
+            while tunnel.poll() is None:
+                for name, process in list(processes.items()):
+                    if process.poll() is None: continue
+                    ns, target, local, remote, route = TARGETS[name]
+                    print(name + ': reconnecting after the selected pod ended.', flush=True)
+                    time.sleep(3)
+                    processes[name] = subprocess.Popen([DEPLOY.KUBECTL, '--kubeconfig', str(config), '-n', ns,
+                        'port-forward', '--address=127.0.0.1', target, f'{local}:{remote}'], stdout=logs[name], stderr=logs[name])
+                time.sleep(1)
+            raise RuntimeError('The private operator connection ended. Run this command again to reconnect.')
         except KeyboardInterrupt: pass
         finally:
             for process in [*processes.values(), tunnel]:
