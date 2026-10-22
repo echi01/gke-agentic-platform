@@ -19,6 +19,16 @@ spec:
       valuesObject:
         {{- toYaml $addon.values | nindent 8 }}
   destination: {server: 'https://kubernetes.default.svc', namespace: {{ $addon.namespace | quote }}}
+  ignoreDifferences:
+    - group: apiregistration.k8s.io
+      kind: APIService
+      managedFieldsManagers: [cert-manager-cainjector]
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      managedFieldsManagers: [cert-manager-cainjector]
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      managedFieldsManagers: [cert-manager-cainjector]
   syncPolicy:
     automated: {prune: false, selfHeal: true}
     syncOptions: [CreateNamespace=true, ServerSideApply=true]

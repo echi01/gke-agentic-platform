@@ -3,3 +3,6 @@ prometheus:
   port: 9090
 rules:
   default: true
+certManager:
+  enabled: true
+listenPort: 10250
