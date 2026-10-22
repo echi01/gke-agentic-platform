@@ -1,0 +1,128 @@
+{
+  "terraform": {
+    "required_version": ">= 1.8",
+    "backend": {
+      "gcs": {}
+    },
+    "required_providers": {
+      "google": {
+        "source": "hashicorp/google",
+        "version": "~> 7.0"
+      },
+      "kubernetes": {
+        "source": "hashicorp/kubernetes",
+        "version": "~> 2.38"
+      }
+    }
+  },
+  "variable": {
+    "kubeconfig_path": {
+      "type": "string"
+    },
+    "kube_context": {
+      "type": "string",
+      "default": "platform-dev"
+    }
+  },
+  "locals": {
+    "environment": "${jsondecode(file(\"${path.module}/../environment.json\"))}",
+    "repositories": {
+      "gke-agentic-platform": "Reusable Google Kubernetes platform with local add-ons, Argo CD, Zero Trust and agent operations",
+      "progressbar-application": "Progress Bar native apps, API and application-owned agent workloads"
+    },
+    "secret_ids": {
+      "gke-agentic-platform": "platform-dev-argocd-infrastructure",
+      "progressbar-application": "platform-dev-argocd-application",
+      "grafana": "platform-dev-grafana-admin",
+      "cloudflare": "platform-dev-cloudflare-dns-token"
+    }
+  },
+  "provider": {
+    "google": {
+      "project": "${local.environment.projectId}",
+      "region": "${local.environment.region}"
+    },
+    "kubernetes": {
+      "config_path": "${var.kubeconfig_path}",
+      "config_context": "${var.kube_context}"
+    }
+  },
+  "data": {
+    "google_secret_manager_secret_version": {
+      "repository": {
+        "for_each": "${local.repositories}",
+        "project": "${local.environment.projectId}",
+        "secret": "${local.secret_ids[each.key]}",
+        "version": "latest"
+      },
+      "grafana": {
+        "project": "${local.environment.projectId}",
+        "secret": "${local.secret_ids[\"grafana\"]}",
+        "version": "latest"
+      }
+    }
+  },
+  "resource": {
+    "kubernetes_namespace_v1": {
+      "bootstrap": {
+        "for_each": "${toset([\"argocd\", \"monitoring\"])}",
+        "metadata": {
+          "name": "${each.key}"
+        }
+      }
+    },
+    "kubernetes_secret_v1": {
+      "repository": {
+        "for_each": "${local.repositories}",
+        "metadata": {
+          "name": "repo-${each.key}",
+          "namespace": "${kubernetes_namespace_v1.bootstrap[\"argocd\"].metadata[0].name}",
+          "labels": {
+            "argocd.argoproj.io/secret-type": "repository"
+          },
+          "annotations": {}
+        },
+        "data": {
+          "type": "git",
+          "url": "git@github.com:${local.environment.githubOwner}/${each.key}.git",
+          "sshPrivateKey": "${jsondecode(data.google_secret_manager_secret_version.repository[each.key].secret_data).sshPrivateKey}"
+        },
+        "type": "Opaque"
+      },
+      "grafana": {
+        "metadata": {
+          "name": "grafana-admin",
+          "namespace": "${kubernetes_namespace_v1.bootstrap[\"monitoring\"].metadata[0].name}",
+          "annotations": {}
+        },
+        "data": {
+          "admin-user": "admin",
+          "admin-password": "${data.google_secret_manager_secret_version.grafana.secret_data}"
+        },
+        "type": "Opaque"
+      }
+    }
+  },
+  "import": [
+    {
+      "to": "kubernetes_secret_v1.repository[\"gke-agentic-platform\"]",
+      "id": "argocd/repo-gke-agentic-platform"
+    },
+    {
+      "to": "kubernetes_secret_v1.repository[\"progressbar-application\"]",
+      "id": "argocd/repo-progressbar-application"
+    },
+    {
+      "to": "kubernetes_namespace_v1.bootstrap[\"argocd\"]",
+      "id": "argocd"
+    },
+    {
+      "to": "kubernetes_namespace_v1.bootstrap[\"monitoring\"]",
+      "id": "monitoring"
+    },
+    {
+      "to": "kubernetes_secret_v1.grafana",
+      "id": "monitoring/grafana-admin"
+    }
+  ]
+}

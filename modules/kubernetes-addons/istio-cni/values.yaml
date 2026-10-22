@@ -1,8 +1,12 @@
-cni:
-  cniBinDir: /home/kubernetes/bin
-  excludeNamespaces:
-  - istio-system
-  - kube-system
-  - argocd
-  - external-secrets
-  - platform-ops
+global:
+  platform: gke
+cniBinDir: /home/kubernetes/bin
+excludeNamespaces:
+- istio-system
+- kube-system
+- argocd
+- external-secrets
+- platform-ops
+resourceQuotas:
+  enabled: true
+  pods: 20

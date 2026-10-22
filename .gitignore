@@ -13,3 +13,6 @@ __pycache__/
 .DS_Store
 
 *.tfvars.json
+
+!deploy/dev/**/release.auto.tfvars.json
+!deploy/dev/**/environment.auto.tfvars.json

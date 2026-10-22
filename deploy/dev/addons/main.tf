@@ -37,6 +37,24 @@ module "addons" {
   revision          = var.revision
   manage_via_gitops = var.manage_via_gitops
   enabled_addons    = var.enabled_addons
-  addon_values      = var.addon_values
+  addon_values      = merge(var.addon_values, { traefik = merge(local.desired_traefik, { service = local.ingress_service }) })
 }
 output "gitops_configuration" { value = module.addons.gitops_configuration }
+
+locals {
+  environment             = jsondecode(file("${path.module}/../environment.json"))
+  desired_traefik         = lookup(var.addon_values, "traefik", {})
+  desired_ingress_service = lookup(local.desired_traefik, "service", {})
+  ingress_service = merge(local.desired_ingress_service, {
+    annotations = merge(lookup(local.desired_ingress_service, "annotations", {}), {
+      "networking.gke.io/load-balancer-ip-addresses" = data.terraform_remote_state.dns.outputs.dns.ingress_address_name
+    })
+  })
+}
+data "terraform_remote_state" "dns" {
+  backend = "gcs"
+  config = {
+    bucket = local.environment.stateBucket
+    prefix = "dev/dns"
+  }
+}

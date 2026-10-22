@@ -1,0 +1,128 @@
+{
+  "terraform": {
+    "required_version": ">= 1.8",
+    "backend": {
+      "gcs": {}
+    },
+    "required_providers": {
+      "google": {
+        "source": "hashicorp/google",
+        "version": "~> 7.0"
+      }
+    }
+  },
+  "locals": {
+    "environment": "${jsondecode(file(\"${path.module}/../environment.json\"))}",
+    "project_roles": [
+      "roles/compute.admin",
+      "roles/container.admin",
+      "roles/iam.serviceAccountAdmin",
+      "roles/iam.serviceAccountUser",
+      "roles/resourcemanager.projectIamAdmin",
+      "roles/serviceusage.serviceUsageAdmin",
+      "roles/artifactregistry.admin",
+      "roles/secretmanager.admin",
+      "roles/storage.admin",
+      "roles/datastore.owner",
+      "roles/dns.admin",
+      "roles/compute.osLogin"
+    ],
+    "secret_ids": [
+      "platform-dev-argocd-infrastructure",
+      "platform-dev-argocd-application",
+      "platform-dev-grafana-admin",
+      "platform-dev-cloudflare-dns-token",
+      "progressbar-dev-invites"
+    ]
+  },
+  "provider": {
+    "google": {
+      "project": "${local.environment.projectId}",
+      "region": "${local.environment.region}"
+    }
+  },
+  "resource": {
+    "google_project_service": {
+      "identity": {
+        "for_each": "${toset([\"iamcredentials.googleapis.com\", \"sts.googleapis.com\"])}",
+        "project": "${local.environment.projectId}",
+        "service": "${each.value}",
+        "disable_on_destroy": false
+      }
+    },
+    "google_service_account": {
+      "deployment": {
+        "project": "${local.environment.projectId}",
+        "account_id": "platform-dev-deployer",
+        "display_name": "Trusted dev infrastructure GitHub workflow"
+      }
+    },
+    "google_iam_workload_identity_pool": {
+      "github": {
+        "project": "${local.environment.projectId}",
+        "workload_identity_pool_id": "platform-dev-github",
+        "display_name": "Dev GitHub deployment",
+        "depends_on": [
+          "google_project_service.identity"
+        ]
+      }
+    },
+    "google_iam_workload_identity_pool_provider": {
+      "github": {
+        "project": "${local.environment.projectId}",
+        "workload_identity_pool_id": "${google_iam_workload_identity_pool.github.workload_identity_pool_id}",
+        "workload_identity_pool_provider_id": "github",
+        "attribute_mapping": {
+          "google.subject": "assertion.sub",
+          "attribute.repository_id": "assertion.repository_id",
+          "attribute.repository_owner_id": "assertion.repository_owner_id"
+        },
+        "attribute_condition": "assertion.repository_owner_id == '101744959' && assertion.repository_id == '1429151480' && assertion.ref == 'refs/heads/main' && assertion.workflow_ref == 'echi01/gke-agentic-platform/.github/workflows/deploy-dev.yaml@refs/heads/main'",
+        "oidc": {
+          "issuer_uri": "https://token.actions.githubusercontent.com"
+        }
+      }
+    },
+    "google_service_account_iam_member": {
+      "workflow": {
+        "service_account_id": "${google_service_account.deployment.name}",
+        "role": "roles/iam.workloadIdentityUser",
+        "member": "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository_id/1429151480"
+      }
+    },
+    "google_project_iam_member": {
+      "deployment": {
+        "for_each": "${toset(local.project_roles)}",
+        "project": "${local.environment.projectId}",
+        "role": "${each.value}",
+        "member": "serviceAccount:${google_service_account.deployment.email}"
+      }
+    },
+    "google_secret_manager_secret_iam_member": {
+      "deployment": {
+        "for_each": "${toset(local.secret_ids)}",
+        "project": "${local.environment.projectId}",
+        "secret_id": "${each.value}",
+        "role": "roles/secretmanager.secretAccessor",
+        "member": "serviceAccount:${google_service_account.deployment.email}"
+      }
+    },
+    "google_iap_tunnel_instance_iam_member": {
+      "deployment": {
+        "project": "${local.environment.projectId}",
+        "zone": "${local.environment.operatorZone}",
+        "instance": "${local.environment.operatorName}",
+        "role": "roles/iap.tunnelResourceAccessor",
+        "member": "serviceAccount:${google_service_account.deployment.email}"
+      }
+    }
+  },
+  "output": {
+    "workload_identity_provider": {
+      "value": "${google_iam_workload_identity_pool_provider.github.name}"
+    },
+    "service_account": {
+      "value": "${google_service_account.deployment.email}"
+    }
+  }
+}

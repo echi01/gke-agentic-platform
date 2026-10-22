@@ -1,0 +1,13 @@
+{
+  "projectId": "project-fb85ba80-c9eb-43f0-af3",
+  "projectNumber": "263502960921",
+  "region": "us-central1",
+  "domain": "dev.progressbar.vip",
+  "parentDomain": "progressbar.vip",
+  "stateBucket": "progressbar-dev-tfstate-263502960921",
+  "operatorName": "platform-dev-operator",
+  "operatorZone": "us-central1-a",
+  "cloudflareTokenSecret": "platform-dev-cloudflare-dns-token",
+  "googleAccount": "pb.simon.chi@gmail.com",
+  "githubOwner": "echi01"
+}

@@ -27,6 +27,9 @@ if __name__=="__main__":
   if name=="certificate-issuers":vals.update({"email":"operator@example.com"})
   if name=="kubernetes-mcp":vals.update({"image":"registry.example/platform-mcp@sha256:"+"a"*64,"apiCidrs":["10.48.0.1/32"]})
   docs=render(helm,ROOT/item["path"],vals,name if name!="kubernetes-mcp" else "platform-ops");counts[name]=len(docs)
+  if name=="istio-cni":
+   assert any(d["kind"]=="ResourceQuota" and "system-node-critical" in str(d) for d in docs)
+   assert "/home/kubernetes/bin" in str(docs), "The GKE CNI binary path must be rendered"
   if name=="kubernetes-mcp":
    exec_grants=[(d["metadata"]["name"],rule) for d in docs if d["kind"]=="Role" for rule in d["rules"] if "pods/exec" in rule.get("resources",[])]
    assert exec_grants==[("connect-platform-mcp",{"apiGroups":[""],"resources":["pods/exec"],"resourceNames":["platform-mcp-0"],"verbs":["create"]})], "Unexpected MCP execution authority"
