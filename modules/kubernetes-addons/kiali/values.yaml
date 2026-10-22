@@ -20,3 +20,7 @@ external_services:
     enabled: false
 server:
   web_root: /kiali
+
+# Stable secret reference avoids random Helm output and unnecessary pod rollouts.
+login_token:
+  signing_key: secret:kiali-login:signing-key

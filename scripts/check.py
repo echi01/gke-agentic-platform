@@ -27,6 +27,10 @@ if __name__=="__main__":
   if name=="certificate-issuers":vals.update({"email":"operator@example.com"})
   if name=="kubernetes-mcp":vals.update({"image":"registry.example/platform-mcp@sha256:"+"a"*64,"apiCidrs":["10.48.0.1/32"]})
   docs=render(helm,ROOT/item["path"],vals,name if name!="kubernetes-mcp" else "platform-ops",kube_version="1.36.4-gke.1391002" if name=="istio-cni" else "1.34.0");counts[name]=len(docs)
+  if name=="kiali":
+   # Render twice: random chart output would cause endless GitOps drift/rollouts.
+   again=render(helm,ROOT/item["path"],vals,name)
+   assert docs==again, "Kiali must render deterministically with a stable secret reference"
   if name=="istio-cni":
    assert any(d["kind"]=="ResourceQuota" and "system-node-critical" in str(d) for d in docs)
    assert "/home/kubernetes/bin" in str(docs), "The GKE CNI binary path must be rendered"
