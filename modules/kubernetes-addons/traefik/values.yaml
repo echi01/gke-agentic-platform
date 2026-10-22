@@ -12,7 +12,7 @@ providers:
     enabled: true
     nativeLBByDefault: true
 serviceAccount:
-  name: traefik
+  name: ""
 resources:
   requests:
     cpu: 100m

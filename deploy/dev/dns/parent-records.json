@@ -1,0 +1,55 @@
+{
+  "apex-a": {
+    "name": "progressbar.vip.",
+    "type": "A",
+    "ttl": 300,
+    "rrdatas": [
+      "199.36.158.100"
+    ]
+  },
+  "www": {
+    "name": "www.progressbar.vip.",
+    "type": "CNAME",
+    "ttl": 300,
+    "rrdatas": [
+      "project-fb85ba80-c9eb-43f0-af3.web.app."
+    ]
+  },
+  "mail": {
+    "name": "progressbar.vip.",
+    "type": "MX",
+    "ttl": 300,
+    "rrdatas": [
+      "10 eforward1.registrar-servers.com.",
+      "10 eforward2.registrar-servers.com.",
+      "10 eforward3.registrar-servers.com.",
+      "15 eforward4.registrar-servers.com.",
+      "20 eforward5.registrar-servers.com."
+    ]
+  },
+  "apex-txt": {
+    "name": "progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"hosting-site=project-fb85ba80-c9eb-43f0-af3\"",
+      "\"v=spf1 include:spf.efwd.registrar-servers.com ~all\""
+    ]
+  },
+  "apex-acme": {
+    "name": "_acme-challenge.progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"ji8LXTXdwKiEXMw09u9LXDIU5eudf-uj8UNxTQUf0Ik\""
+    ]
+  },
+  "www-acme": {
+    "name": "_acme-challenge.www.progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"sos8FsmnJzbSfAb0KxCq7LcF-uk9Vk2Hg1yvjU_NtPI\""
+    ]
+  }
+}

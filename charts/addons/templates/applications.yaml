@@ -29,9 +29,15 @@ spec:
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
       managedFieldsManagers: [cert-manager-cainjector]
+  {{- if or (eq $name "istiod") (eq $name "istio-base") }}
+    # Istiod owns its CA and promotes validation from Ignore to Fail after startup.
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jqPathExpressions: ['.webhooks[]?.clientConfig.caBundle', '.webhooks[]?.failurePolicy']
+  {{- end }}
   syncPolicy:
     automated: {prune: false, selfHeal: true}
-    syncOptions: [CreateNamespace=true, ServerSideApply=true]
+    syncOptions: [CreateNamespace=true, ServerSideApply=true, RespectIgnoreDifferences=true]
     retry: {limit: 5, backoff: {duration: 10s, factor: 2, maxDuration: 3m}}
 {{- end }}
 {{- end }}
