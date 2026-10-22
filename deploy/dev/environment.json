@@ -7,7 +7,6 @@
   "stateBucket": "progressbar-dev-tfstate-263502960921",
   "operatorName": "platform-dev-operator",
   "operatorZone": "us-central1-a",
-  "cloudflareTokenSecret": "platform-dev-cloudflare-dns-token",
   "googleAccount": "pb.simon.chi@gmail.com",
   "githubOwner": "echi01"
 }

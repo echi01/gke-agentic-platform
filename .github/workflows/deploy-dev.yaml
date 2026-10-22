@@ -1,6 +1,12 @@
 name: Reconcile Google dev
 on:
   workflow_dispatch:
+    inputs:
+      stage:
+        description: Deployment scope
+        type: choice
+        default: dns
+        options: [dns, all]
 permissions:
   contents: read
   id-token: write
@@ -45,4 +51,6 @@ jobs:
       - name: Validate source before deployment
         run: python scripts/check.py
       - name: Reconcile committed dev state
-        run: python scripts/deploy-dev.py --apply
+        env:
+          DEPLOY_STAGE: ${{ inputs.stage }}
+        run: python scripts/deploy-dev.py --stage "$DEPLOY_STAGE" --apply

@@ -41,8 +41,7 @@
     "secret_ids": {
       "gke-agentic-platform": "platform-dev-argocd-infrastructure",
       "progressbar-application": "platform-dev-argocd-application",
-      "grafana": "platform-dev-grafana-admin",
-      "cloudflare": "platform-dev-cloudflare-dns-token"
+      "grafana": "platform-dev-grafana-admin"
     }
   },
   "resource": {

@@ -10,6 +10,7 @@ deploy/{dev,staging,prod}/
   gke/                     Private regional cluster, network, registry and nodes
   addons/                  ArgoCD bootstrap and selected platform add-ons
   workloads/               Register separately owned application releases
+deploy/dev/dns/            Terraform-owned Cloud DNS zone, record and reserved IP
 infrastructure/
   state-backend/           State-storage composition
   gke-platform/            Cluster composition
@@ -38,6 +39,7 @@ docs/                      Ownership, deployment, operational lab and verificati
 
 - Private regional GKE Standard, Dataplane V2, workload federation, dedicated node identity, autoscaling CPU nodes and optional zero-minimum GPU pool.
 - Protected state, separate environment roots and deployment-stage state prefixes. Production requires three minimum CPU nodes.
+- Native Google Cloud DNS zones and records managed by Terraform, using a reserved ingress IP. [DNS ownership and deployment](deploy/dev/dns/README.md).
 - Individual add-on integrations and a shared Helm helper. Participating add-ons support direct Terraform ownership or ArgoCD ownership; ArgoCD itself always boots through Terraform.
 - Separate add-ons and workload parent Applications. Each external application gets its own namespace and restricted AppProject; privileged prerequisites use a separately reviewed project/release.
 - Prometheus/Grafana, Prometheus Adapter, External Secrets, Istio and cert-manager. Optional Argo Rollouts, KEDA, Kueue, JobSet and public Istio gateway.

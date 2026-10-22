@@ -31,7 +31,6 @@
       "platform-dev-argocd-infrastructure",
       "platform-dev-argocd-application",
       "platform-dev-grafana-admin",
-      "platform-dev-cloudflare-dns-token",
       "progressbar-dev-invites"
     ]
   },

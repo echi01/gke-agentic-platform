@@ -61,6 +61,7 @@ if __name__=="__main__":
  if a.terraform:
   tf=binary("terraform")
   dirs=[ROOT/"modules/gke",ROOT/"modules/state-backend",ROOT/"modules/workload-identity",ROOT/"modules/kubernetes-addons/helm-addon",ROOT/"infrastructure/state-backend",ROOT/"infrastructure/gke-platform",ROOT/"infrastructure/platform-addons",ROOT/"infrastructure/workload-delivery"]+[ROOT/"deploy"/env/stage for env in ["dev","staging","prod"] for stage in ["backend","gke","addons","workloads"]]
+  dirs += [ROOT/"modules/dns", ROOT/"deploy/dev/dns"]
   for folder in dirs:
    run([tf,"init","-backend=false","-input=false","-no-color"],folder)
    run([tf,"validate","-no-color"],folder)

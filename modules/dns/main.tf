@@ -9,7 +9,7 @@ variable "name" { type = string }
 variable "dns_name" {
   type = string
   validation {
-    condition     = can(regex("^[a-z0-9][a-z0-9.-]+\\.$", var.dns_name))
+    condition     = can(regex("^[a-z0-9][a-z0-9.-]+[.]$", var.dns_name))
     error_message = "Use a fully qualified DNS name with a trailing dot."
   }
 }

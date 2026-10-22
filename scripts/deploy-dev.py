@@ -2,7 +2,7 @@
 
 One-time trusted bootstrap: backend -> gke -> dns -> bootstrap -> automation.
 Ongoing GitHub workflow: gke -> dns -> cluster bootstrap -> add-ons -> application
-resources -> workload registration -> DNS delegation. No dashboard edits.
+resources -> workload registration. Google DNS records are managed by Terraform.
 """
 import argparse, base64, json, os, pathlib, shutil, socket, ssl, subprocess, tempfile, time, urllib.request
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -28,8 +28,6 @@ def terraform(folder, apply, extra_env=None):
     def environment():
         env = dict(os.environ, TF_IN_AUTOMATION='true', GOOGLE_OAUTH_ACCESS_TOKEN=capture(['gcloud', 'auth', 'print-access-token', *ACCOUNT]))
         env.update(extra_env or {})
-        if folder.name == 'dns-delegation':
-            env['CLOUDFLARE_API_TOKEN'] = secret(PROFILE['cloudflareTokenSecret'])
         return env
     base = [TF, '-chdir=' + str(folder)]
     subprocess.run(base + ['init', '-input=false', '-no-color', '-backend-config=backend.config'], env=environment(), check=True)
@@ -83,9 +81,9 @@ def application_checkout(folder):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--apply', action='store_true')
-    parser.add_argument('--stage', choices=['gke', 'dns', 'bootstrap', 'automation', 'cluster-bootstrap', 'addons', 'application-data', 'workloads', 'dns-delegation', 'all'], default='all')
+    parser.add_argument('--stage', choices=['gke', 'dns', 'bootstrap', 'automation', 'cluster-bootstrap', 'addons', 'application-data', 'workloads', 'all'], default='all')
     args = parser.parse_args()
-    if args.stage in ['gke', 'dns', 'automation', 'dns-delegation', 'bootstrap']:
+    if args.stage in ['gke', 'dns', 'automation', 'bootstrap']:
         extra = {}
         if args.stage == 'bootstrap':
             if os.environ.get('GITHUB_ACTIONS') == 'true':
@@ -101,7 +99,7 @@ def main():
         config, tunnel, log = kubeconfig(folder)
         try:
             extra = {'TF_VAR_kubeconfig_path': str(config)}
-            for stage in ['cluster-bootstrap', 'addons', 'application-data', 'workloads', 'dns-delegation']:
+            for stage in ['cluster-bootstrap', 'addons', 'application-data', 'workloads']:
                 if args.stage not in ['all', stage]:
                     continue
                 target = ROOT / 'deploy/dev' / stage
