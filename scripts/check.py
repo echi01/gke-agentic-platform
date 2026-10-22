@@ -10,10 +10,10 @@ def binary(name):
  if not value and (ROOT/".tools"/name).exists():value=ROOT/".tools"/name
  if not value:raise SystemExit("Install "+name+" or set "+name.upper())
  return str(value)
-def render(helm,chart,values,namespace="argocd"):
+def render(helm,chart,values,namespace="argocd",kube_version="1.34.0"):
  out=ROOT/".artifacts";out.mkdir(exist_ok=True)
  file=out/(chart.name+"-values.yaml");file.write_text(yaml.safe_dump(values))
- text=run([helm,"template",chart.name,chart,"--namespace",namespace,"--kube-version","1.34.0","--include-crds","-f",file],capture=True)
+ text=run([helm,"template",chart.name,chart,"--namespace",namespace,"--kube-version",kube_version,"--include-crds","-f",file],capture=True)
  docs=[d for d in yaml.safe_load_all(text) if d]
  (out/(chart.name+"-rendered.yaml")).write_text(text)
  return docs
@@ -26,7 +26,7 @@ if __name__=="__main__":
   vals=yaml.safe_load((ROOT/"modules/kubernetes-addons"/name/"values.yaml").read_text()) or {}
   if name=="certificate-issuers":vals.update({"email":"operator@example.com"})
   if name=="kubernetes-mcp":vals.update({"image":"registry.example/platform-mcp@sha256:"+"a"*64,"apiCidrs":["10.48.0.1/32"]})
-  docs=render(helm,ROOT/item["path"],vals,name if name!="kubernetes-mcp" else "platform-ops");counts[name]=len(docs)
+  docs=render(helm,ROOT/item["path"],vals,name if name!="kubernetes-mcp" else "platform-ops",kube_version="1.36.4-gke.1391002" if name=="istio-cni" else "1.34.0");counts[name]=len(docs)
   if name=="istio-cni":
    assert any(d["kind"]=="ResourceQuota" and "system-node-critical" in str(d) for d in docs)
    assert "/home/kubernetes/bin" in str(docs), "The GKE CNI binary path must be rendered"
