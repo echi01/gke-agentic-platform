@@ -296,3 +296,17 @@ output "private_endpoint" { value = google_container_cluster.main.private_cluste
 
 output "network_id" { value = google_compute_network.main.id }
 output "subnetwork_id" { value = google_compute_subnetwork.nodes.id }
+
+# Istiod's admission endpoint is not included in GKE's default master firewall.
+resource "google_compute_firewall" "mesh_admission" {
+  project                 = var.project_id
+  name                    = "${local.name}-mesh-admission"
+  network                 = google_compute_network.main.id
+  direction               = "INGRESS"
+  source_ranges           = [var.master_cidr]
+  target_service_accounts = [google_service_account.nodes.email]
+  allow {
+    protocol = "tcp"
+    ports    = ["15017"]
+  }
+}

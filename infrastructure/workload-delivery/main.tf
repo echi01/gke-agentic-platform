@@ -13,7 +13,7 @@ variable "revision" {
 }
 variable "workloads" {
   type = map(object({ repositoryUrl = string, revision = string, namespace = string,
-    path = string, extensionPath = optional(string, ""), mesh = optional(bool, true),
+    path = string, extensionPath = optional(string, ""), edgeNamespace = optional(string, ""), mesh = optional(bool, true),
   observerGroups = optional(list(string), []), values = optional(any, {}) }))
   default = {}
   validation {
