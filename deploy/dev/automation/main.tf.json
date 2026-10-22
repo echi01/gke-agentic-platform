@@ -25,7 +25,9 @@
       "roles/storage.admin",
       "roles/datastore.owner",
       "roles/dns.admin",
-      "roles/compute.osLogin"
+      "roles/compute.osLogin",
+      "roles/firebaseauth.admin",
+      "roles/serviceusage.apiKeysAdmin"
     ],
     "secret_ids": [
       "platform-dev-argocd-infrastructure",
