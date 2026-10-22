@@ -1,5 +1,7 @@
 deployment:
   replicas: 1
+  podLabels:
+    sidecar.istio.io/inject: "true"
   podAnnotations:
     sidecar.istio.io/inject: 'true'
     proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'

@@ -71,8 +71,10 @@ def retire_superseded_sync(config, name):
     app = json.loads(capture(command + ['get', 'application', name, '-o', 'json']))
     state = app.get('status', {}).get('operationState', {})
     desired = app['spec']['source']['targetRevision']
-    running = state.get('operation', {}).get('sync', {}).get('revision')
-    if app.get('operation') and state.get('phase') == 'Running' and running and running != desired:
+    sync = state.get('operation', {}).get('sync', {})
+    running = sync.get('revision')
+    superseded = running and (running != desired or (sync.get('source') and sync['source'] != app['spec']['source']))
+    if app.get('operation') and state.get('phase') == 'Running' and superseded:
         patch = [{'op': 'test', 'path': '/metadata/resourceVersion', 'value': app['metadata']['resourceVersion']},
                  {'op': 'replace', 'path': '/status/operationState/phase', 'value': 'Terminating'}]
         subprocess.run(command + ['patch', 'application', name, '--type=json', '-p', json.dumps(patch)], check=True)
