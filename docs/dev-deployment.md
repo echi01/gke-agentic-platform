@@ -1,5 +1,9 @@
 # Isolated Google dev deployment
 
+The cloud dev runtime is now disabled in the committed profile. See
+[the retirement runbook](dev-retirement.md) for teardown and retained website resources.
+The rollout below describes how the earlier test was provisioned.
+
 This deployment leaves the existing Progress Bar website, Firebase Hosting site, desktop installation and release downloads unchanged. Only `dev.progressbar.vip` routes to the Kubernetes application API. Desktop/mobile clients remain separate application deliverables; the marketing website does not host the product.
 
 ## Ordered bootstrap
