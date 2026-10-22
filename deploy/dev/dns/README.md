@@ -14,7 +14,9 @@ Terraform owns the DNS record; no DNS controller owns or mutates it. Cert-manage
 
 ## Public activation
 
-The Google zone is created and can be queried through the Google authoritative nameservers in `dns.name_servers`. It becomes publicly authoritative only after delegation is configured upstream. The existing website's DNS and registrar configuration have not been changed by this stage. A move of the parent domain must preserve its existing website/mail records and be handled as an explicit registrar migration; it is not performed as a side effect of creating the dev zone.
+Terraform now also owns `progressbar-public`, the parent `progressbar.vip.` zone. `parent-records.json` preserves the eleven existing website, mail and verification records in six record sets. `parent.tf` delegates `dev.progressbar.vip.` from that Google parent zone to the Google dev zone.
+
+The new parent authoritative servers are `ns-cloud-c1.googledomains.com` through `ns-cloud-c4.googledomains.com`. All preserved records have been verified directly against Google. Public activation still requires the separate `deploy/dev/registrar` Terraform stage to change Namecheap's nameservers. That registrar stage requires API access and an allowlisted execution IP. No external DNS controller or Cloudflare credential is used.
 
 ## Verification
 
