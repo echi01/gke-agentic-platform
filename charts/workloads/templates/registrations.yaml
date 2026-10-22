@@ -6,10 +6,12 @@
 {{- $_ := set $namespaces $app.namespace true }}
 {{- if not (regexMatch "^(https://|ssh://|git@)" $app.repositoryUrl) }}{{ fail "Set the external application Git repository" }}{{ end }}
 {{- if not (regexMatch "^[a-z][a-z0-9-]{1,40}$" $app.namespace) }}{{ fail "Invalid application namespace" }}{{ end }}
-{{- if has $app.namespace (list "default" "kube-system" "kube-public" "kube-node-lease" "argocd" "istio-system" "monitoring" "platform-ops" "cert-manager" "external-secrets" "keda" "argo-rollouts" "kueue-system" "jobset-system") }}{{ fail "Applications require a dedicated tenant namespace" }}{{ end }}
+{{- if has $app.namespace (list "default" "kube-system" "kube-public" "kube-node-lease" "argocd" "istio-system" "monitoring" "platform-ops" "cert-manager" "traefik" "external-secrets" "keda" "argo-rollouts" "kueue-system" "jobset-system") }}{{ fail "Applications require a dedicated tenant namespace" }}{{ end }}
 {{- $edge := $app.edgeNamespace | default "" }}
 {{- if and $edge (ne $edge (printf "%s-edge" $app.namespace)) }}{{ fail "The optional edge namespace must be the tenant namespace with -edge appended" }}{{ end }}
 {{- if $edge }}
+{{- if hasKey $namespaces $edge }}{{ fail "Application and edge namespaces must not overlap" }}{{ end }}
+{{- $_ := set $namespaces $edge true }}
 ---
 apiVersion: v1
 kind: Namespace
