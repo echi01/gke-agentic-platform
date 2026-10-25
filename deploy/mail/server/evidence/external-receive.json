@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-10-25T22:30:59.738234+00:00",
+  "testType": "External Gmail to public MX, verified through authenticated IMAP",
+  "sender": "Pb Simon Chi <pb.simon.chi@gmail.com>",
+  "recipient": "hello@progressbar.vip",
+  "subject": "Progress Bar receive test PB-INBOUND-20261025223031187",
+  "messageId": "<CAO80K9fP17MmBMfZyZpQSBCw_YsjBYJrs=4L=7DD1wzOJ0KxvA@mail.gmail.com>",
+  "mailbox": "INBOX",
+  "imapUid": "5",
+  "date": "Sun, 25 Oct 2026 18:30:33 -0400",
+  "received": [
+    "from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45] (AS15169 Google LLC, US))\t(using TLSv1.3 with cipher TLS13_AES_256_GCM_SHA384)\tby mail.progressbar.vip (Stalwart SMTP) with ESMTPS id 4AD36FAA5600600;\tSun, 25 Oct 2026 22:30:45 +0000",
+    "by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-917a6dccc60so29331636d6.0        for <hello@progressbar.vip>; Sun, 25 Oct 2026 15:30:45 -0700 (PDT)"
+  ],
+  "authenticationResults": [
+    "mail.progressbar.vip;\tdkim=pass header.d=gmail.com header.s=20251104 header.b=Kd3xHiDU;\tspf=none (mail.progressbar.vip: no SPF records found for postmaster@mail-qv1-f45.google.com) smtp.helo=mail-qv1-f45.google.com;\tspf=pass (mail.progressbar.vip: domain of pb.simon.chi@gmail.com designates 209.85.219.45 as permitted sender) smtp.mailfrom=pb.simon.chi@gmail.com;\tiprev=pass policy.iprev=209.85.219.45;\tdmarc=pass header.from=gmail.com policy.dmarc=none"
+  ],
+  "bodyTokenMatched": true,
+  "messageSha256": "12884f05a0f8a80a77563835b52ef33f5fdc8ace198cc0f8d6aa4030992b4abf",
+  "body": "Inbound delivery test requested by the Progress Bar owner. Sent from Gmail\r\nto hello@progressbar.vip through public MX routing. Verification code:\r\nPB-INBOUND-20261025223031187",
+  "status": "received"
+}
