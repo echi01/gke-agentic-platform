@@ -21,7 +21,7 @@ Stalwart Community Edition on a small persistent Google VM can provide SMTP subm
 
 While the project restriction remains, internet delivery needs an authenticated outbound relay on port 587/465. A free-tier relay is an option; provider approval, quota and account configuration must be checked. Without that relay or Google lifting the block, do not deploy an inbound-only server and call sending complete. Do not change the domain's MX until the chosen mailbox service is ready to receive mail.
 
-The user has been asked to choose between self-hosted Stalwart plus a free outbound relay, or waiting for Google to lift the restriction. No relay account, subscription or support request was created.
+The user initially selected Stalwart plus a free outbound relay, then requested Google’s service instead of Brevo on 25 October 2026. The Google Workspace route and its separate subscription cost are documented in [GOOGLE-WORKSPACE.md](GOOGLE-WORKSPACE.md); confirmation is pending. No relay account, subscription or support request was created, and no persistent mail server was provisioned.
 
 Mailcheap currently supports SES and PostShiba rather than arbitrary SMTP. Connecting it to a self-hosted mail server requires a real provider/SMTP integration; merely changing a URL is not sufficient. The application repository's working Mailcheap integration is currently draft-only.
 
