@@ -1,0 +1,12 @@
+{
+  "projectId": "project-fb85ba80-c9eb-43f0-af3",
+  "region": "us-central1",
+  "zone": "us-central1-a",
+  "account": "pb.simon.chi@gmail.com",
+  "stateBucket": "progressbar-dev-tfstate-263502960921",
+  "domain": "progressbar.vip",
+  "hostname": "mail.progressbar.vip",
+  "machineType": "e2-small",
+  "image": "stalwartlabs/stalwart@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
+  "version": "v0.16.27"
+}

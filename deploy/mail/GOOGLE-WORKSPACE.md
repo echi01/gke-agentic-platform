@@ -1,10 +1,10 @@
-# Google-hosted branded email — proposed switch
+# Historical Google Workspace alternative — not selected
 
 User steering on 25 October 2026: use Google's email service rather than Brevo. No Brevo account was created, no mailbox VM was provisioned, and no domain records changed during this investigation. The official Stalwart source/image were downloaded locally for evaluation only.
 
 Google Workspace provides real branded Gmail mailboxes. This is separate from hosting Stalwart on Compute Engine. Business Starter's published US standard pricing is $8.40/user/month on the flexible plan (no annual commitment), or $7/user/month with an annual commitment, before tax. A 14-day trial is advertised; introductory offers and final checkout prices may differ. Workspace billing is separate from the Google Cloud trial-credit account.
 
-Pending: user confirmation of the paid Workspace route. Do not create a subscription, accept terms, enter payment details or switch MX while this choice is pending. The user's answer “no. real” to the test-email question does not identify or authorize a test recipient. No external test email is authorized by that answer.
+Superseded: the user clarified they want an open-source server on Google Cloud, not Google Workspace. No paid Workspace route is authorized. Do not create a subscription, accept terms, enter payment details or switch MX while this choice is pending. The user's answer “no. real” to the test-email question does not identify or authorize a test recipient. No external test email is authorized by that answer.
 
 ## Proposed activation
 

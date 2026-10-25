@@ -20,11 +20,7 @@
     "type": "MX",
     "ttl": 300,
     "rrdatas": [
-      "10 eforward1.registrar-servers.com.",
-      "10 eforward2.registrar-servers.com.",
-      "10 eforward3.registrar-servers.com.",
-      "15 eforward4.registrar-servers.com.",
-      "20 eforward5.registrar-servers.com."
+      "10 mail.progressbar.vip."
     ]
   },
   "apex-txt": {
@@ -33,7 +29,7 @@
     "ttl": 300,
     "rrdatas": [
       "\"hosting-site=project-fb85ba80-c9eb-43f0-af3\"",
-      "\"v=spf1 include:spf.efwd.registrar-servers.com ~all\""
+      "\"v=spf1 ip4:34.59.12.60 -all\""
     ]
   },
   "apex-acme": {
@@ -50,6 +46,14 @@
     "ttl": 300,
     "rrdatas": [
       "\"sos8FsmnJzbSfAb0KxCq7LcF-uk9Vk2Hg1yvjU_NtPI\""
+    ]
+  },
+  "dmarc": {
+    "name": "_dmarc.progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"v=DMARC1; p=none; rua=mailto:postmaster@progressbar.vip\""
     ]
   }
 }

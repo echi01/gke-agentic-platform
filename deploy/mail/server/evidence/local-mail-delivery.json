@@ -1,0 +1,9 @@
+{
+  "realServer": true,
+  "fixtureDomain": "progressbar.test",
+  "authenticatedSubmission": true,
+  "aliasDelivery": true,
+  "imapReceipt": true,
+  "unauthenticatedRelayRejected": 550,
+  "internetMessagesSent": 0
+}

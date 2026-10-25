@@ -1,0 +1,26 @@
+{
+  "v1-ed25519-20261025._domainkey.progressbar.vip.": {
+    "name": "v1-ed25519-20261025._domainkey.progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"v=DKIM1; k=ed25519; h=sha256; p=s2EKyoR7IAyH0iO5ftkAYQIbLc4WvOXQYwcEzCDWxJw=\""
+    ]
+  },
+  "v1-rsa-20261025._domainkey.progressbar.vip.": {
+    "name": "v1-rsa-20261025._domainkey.progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"v=DKIM1; k=rsa; h=sha256; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1uGIWN6I+s5Ihngi9p0TBmwZvAd9mpqMaU7HiMkQsVTmh7KP7QHkzaIjWBuDwcJJ3fnJRZvQpaPHpc33YWs6ixAnGk5VKWuQUwXZf5w5GcYrvYEln3PJ2f93ZfdpDFv0epYgC4UlwvWGKgqYlVgthVam9SlOBreTRn8enwx7T6NVd8dfI3\" \"mUw4PsONyjvbnEL6kyP1Jmu16piXyxrLqOySCNwh+WARshHKyciQtGnSv8C1x8me3vRbmA2Kpxvca2Rtambr9pO1SW2Z5GEoQF/cK2Hf5xkxLf+dN84oZd67z6n8ukYe/fvlCZFNeDU+AEIVjrN2A3h+Xs3OGjJw4h9QIDAQAB\""
+    ]
+  },
+  "mail.progressbar.vip.": {
+    "name": "mail.progressbar.vip.",
+    "type": "TXT",
+    "ttl": 300,
+    "rrdatas": [
+      "\"v=spf1 a -all\""
+    ]
+  }
+}

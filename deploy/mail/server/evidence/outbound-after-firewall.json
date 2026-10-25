@@ -1,0 +1,35 @@
+{
+  "testedAt": "2026-10-25T21:57:55.674930+00:00",
+  "checks": [
+    {
+      "host": "gmail-smtp-in.l.google.com",
+      "port": 25,
+      "connected": false,
+      "error": "TimeoutError"
+    },
+    {
+      "host": "aspmx.l.google.com",
+      "port": 25,
+      "connected": false,
+      "error": "TimeoutError"
+    },
+    {
+      "host": "mta5.am0.yahoodns.net",
+      "port": 25,
+      "connected": false,
+      "error": "TimeoutError"
+    },
+    {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "connected": true
+    },
+    {
+      "host": "www.google.com",
+      "port": 443,
+      "connected": true
+    }
+  ],
+  "sendsMail": false,
+  "internetMessagesSent": 0
+}

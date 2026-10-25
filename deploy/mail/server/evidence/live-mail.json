@@ -1,0 +1,62 @@
+{
+  "testedAt": "2026-10-25T21:57:58.002970+00:00",
+  "hostname": "mail.progressbar.vip",
+  "ports": [
+    {
+      "port": 25,
+      "reachable": true
+    },
+    {
+      "port": 443,
+      "reachable": true
+    },
+    {
+      "port": 465,
+      "reachable": true
+    },
+    {
+      "port": 587,
+      "reachable": true
+    },
+    {
+      "port": 993,
+      "reachable": true
+    },
+    {
+      "port": 8080,
+      "reachable": false,
+      "error": "TimeoutError"
+    }
+  ],
+  "externalRecipients": [],
+  "tls": {
+    "verified": true,
+    "issuer": [
+      [
+        [
+          "countryName",
+          "US"
+        ]
+      ],
+      [
+        [
+          "organizationName",
+          "Let's Encrypt"
+        ]
+      ],
+      [
+        [
+          "commonName",
+          "YE2"
+        ]
+      ]
+    ],
+    "expires": "Jan 23 20:55:48 2027 GMT"
+  },
+  "authenticatedSubmission": true,
+  "aliasDeliveryAndImapReceipt": true,
+  "unauthenticatedRelayRejected": 550,
+  "inboundAliasRecipientAccepted": 250,
+  "unknownRecipientRejected": 550,
+  "wrongPasswordRejected": true
+}
